@@ -125,17 +125,6 @@ contract CharacterCollector is
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
-    /*
-    function getRandomLevelUp() public returns (bytes32 requestId) {
-        require(
-            IERC20(LINK).balanceOf(address(this)) > fee,
-            "Not enough LINK - fill contract with faucet"
-        );
-        bytes32 levelUp = (requestRandomness(keyHash, fee) % 10) + 1;
-        return levelUp;
-    }
-    */
-
     function requestRandomWords()
         external
         onlyOwner
@@ -185,6 +174,14 @@ contract CharacterCollector is
         return (request.paid, request.fulfilled, request.randomWords);
     }
 
+    function getRandomLevelUp(uint256 requestId)
+        public
+        returns (uint256 levelUp)
+    {
+        (, , levelUp) = getRequestStatus(requestId);
+        return (levelUp % 10) + 1;
+    }
+
     /**
      * Allow withdraw of Link tokens from the contract
      */
@@ -195,7 +192,6 @@ contract CharacterCollector is
             "Unable to transfer"
         );
     }
-    /*
 
     function train(uint256 tokenId) public {
         require(_exists(tokenId), "Please use an existing token");
@@ -208,5 +204,4 @@ contract CharacterCollector is
         tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
         _setTokenURI(tokenId, getTokenURI(tokenId));
     }
-    */
 }
