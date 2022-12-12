@@ -15,12 +15,12 @@ contract CharacterCollector is
     VRFV2WrapperConsumerBase,
     ConfirmedOwner
 {
+    // using strings library to associate all methods within it to uint256
     using Strings for uint256;
+
+    // used to store and handle token IDs
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-
-    mapping(uint256 => uint256) public tokenIdToLevels;
-    mapping(uint256 => string) public tokenIdToName;
 
     // EVENTS
     event RequestSent(uint256 requestId, uint32 numWords);
@@ -30,21 +30,29 @@ contract CharacterCollector is
         uint256 payment
     );
 
+    // GAME MAPPINGS
+
+    mapping(uint256 => uint256) public tokenIdToLevels;
+    mapping(uint256 => string) public tokenIdToName;
+
+    // Chainlink VRF Configuration for Polygon Mumbai
+
+    // LINK fee
     uint256 fee = 0.0001 * 10**18;
     bytes32 keyHash =
         0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
     address linkAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
     address wrapperAddress = 0x99aFAf084eBA697E584501b8Ed2c0B37Dd136693;
-
+    // The limit for how much gas to use for the callback request to your contract’s fulfillRandomWords() function.
     uint32 callbackGasLimit = 100000;
 
-    // The default is 3, but you can set this higher.
+    // Confirmations required before randomness can be provided
     uint16 requestConfirmations = 3;
 
-    // For this example, retrieve 2 random values in one request.
-    // Cannot exceed VRFV2Wrapper.getConfig().maxNumWords.
+    // Number of random units
     uint32 numWords = 1;
 
+    // Struct and mapping to hold the ramdom numbers
     struct RequestStatus {
         uint256 paid; // amount paid in link
         bool fulfilled; // whether the request has been successfully fulfilled
@@ -62,6 +70,7 @@ contract CharacterCollector is
         VRFV2WrapperConsumerBase(linkAddress, wrapperAddress)
     {}
 
+    // generates SVG image containing the character name and level
     function generateCharacter(uint256 tokenId) public returns (string memory) {
         bytes memory svg = abi.encodePacked(
             '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
@@ -85,16 +94,19 @@ contract CharacterCollector is
             );
     }
 
+    // returns current level of a token
     function getLevels(uint256 tokenId) public view returns (string memory) {
         uint256 levels = tokenIdToLevels[tokenId];
         return levels.toString();
     }
 
+    // returns name of a token
     function getName(uint256 tokenId) public view returns (string memory) {
         string memory name = tokenIdToName[tokenId];
         return name;
     }
 
+    // returns token URI of NFT
     function getTokenURI(uint256 tokenId) public returns (string memory) {
         bytes memory dataURI = abi.encodePacked(
             "{",
@@ -116,6 +128,7 @@ contract CharacterCollector is
             );
     }
 
+    // function to mint a token
     function mint(string memory name) public {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
@@ -125,11 +138,8 @@ contract CharacterCollector is
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
-    function requestRandomWords()
-        external
-        onlyOwner
-        returns (uint256 requestId)
-    {
+    // function to request the random number from Chainlink VRF
+    function requestRandomWords() external returns (uint256 requestId) {
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
@@ -146,6 +156,7 @@ contract CharacterCollector is
         return requestId;
     }
 
+    // stores and saves the random number alongside the request ID
     function fulfillRandomWords(
         uint256 _requestId,
         uint256[] memory _randomWords
@@ -160,26 +171,18 @@ contract CharacterCollector is
         );
     }
 
-    function getRequestStatus(uint256 _requestId)
+    // gets the ramdom number that has been issued by the VRF and applies a range of 1 - 10 to it
+    function getRandomLevelUp(uint256 _requestId)
         external
         view
-        returns (
-            uint256 paid,
-            bool fulfilled,
-            uint256[] memory randomWords
-        )
+        returns (uint256 newLevelUp)
     {
         require(s_requests[_requestId].paid > 0, "request not found");
         RequestStatus memory request = s_requests[_requestId];
-        return (request.paid, request.fulfilled, request.randomWords);
-    }
+        uint256 levelUp = request.randomWords[0];
+        newLevelUp = (levelUp % 10) + 1;
 
-    function getRandomLevelUp(uint256 requestId)
-        public
-        returns (uint256 levelUp)
-    {
-        (, , levelUp) = getRequestStatus(requestId);
-        return (levelUp % 10) + 1;
+        return newLevelUp;
     }
 
     /**
@@ -193,14 +196,15 @@ contract CharacterCollector is
         );
     }
 
-    function train(uint256 tokenId) public {
+    // assigns the new random number to the level of the tokenID. This functionality will be built into the getRandomLevelUp function
+    function train(uint256 tokenId, uint256 randomRequestId) public {
         require(_exists(tokenId), "Please use an existing token");
         require(
             ownerOf(tokenId) == msg.sender,
             "You must own this token to train it"
         );
         uint256 currentLevel = tokenIdToLevels[tokenId];
-        uint256 newLevelUp = getRandomLevelUp();
+        uint256 newLevelUp = getRandomLevelUp(randomRequestId);
         tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
         _setTokenURI(tokenId, getTokenURI(tokenId));
     }
