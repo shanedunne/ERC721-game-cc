@@ -153,7 +153,7 @@ contract CharacterCollector is
             numWords
         );
         s_requests[requestId] = RequestStatus({
-            tokenOwner: tokenId,
+            tokenOwner: msg.sender,
             paid: VRF_V2_WRAPPER.calculateRequestPrice(callbackGasLimit),
             randomWords: new uint256[](0),
             fulfilled: false
