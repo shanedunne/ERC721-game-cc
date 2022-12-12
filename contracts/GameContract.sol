@@ -23,17 +23,20 @@ contract CharacterCollector is
     Counters.Counter private _tokenIds;
 
     // EVENTS
-    event RequestSent(uint256 requestId, uint32 numWords);
+    event RequestSent(uint256 tokenId, uint256 requestId, uint32 numWords);
     event RequestFulfilled(
         uint256 requestId,
         uint256[] randomWords,
         uint256 payment
     );
+    event WeHaveAWinner(uint256 tokenId, address owner, string characterName);
 
     // GAME MAPPINGS
 
     mapping(uint256 => uint256) public tokenIdToLevels;
     mapping(uint256 => string) public tokenIdToName;
+
+    uint256 targetScore = 75;
 
     // Chainlink VRF Configuration for Polygon Mumbai
 
@@ -54,6 +57,7 @@ contract CharacterCollector is
 
     // Struct and mapping to hold the ramdom numbers
     struct RequestStatus {
+        address tokenOwner;
         uint256 paid; // amount paid in link
         bool fulfilled; // whether the request has been successfully fulfilled
         uint256[] randomWords;
@@ -139,24 +143,28 @@ contract CharacterCollector is
     }
 
     // function to request the random number from Chainlink VRF
-    function requestRandomWords() external returns (uint256 requestId) {
+    function requestRandomWords(uint256 tokenId)
+        external
+        returns (uint256 requestId)
+    {
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
             numWords
         );
         s_requests[requestId] = RequestStatus({
+            tokenOwner: tokenId,
             paid: VRF_V2_WRAPPER.calculateRequestPrice(callbackGasLimit),
             randomWords: new uint256[](0),
             fulfilled: false
         });
         requestIds.push(requestId);
         lastRequestId = requestId;
-        emit RequestSent(requestId, numWords);
+        emit RequestSent(tokenId, requestId, numWords);
         return requestId;
     }
 
-    // stores and saves the random number alongside the request ID
+    // stores and saves the random number alongside the request ID. This is an automatic callback function, called by the VRF
     function fulfillRandomWords(
         uint256 _requestId,
         uint256[] memory _randomWords
@@ -172,17 +180,25 @@ contract CharacterCollector is
     }
 
     // gets the ramdom number that has been issued by the VRF and applies a range of 1 - 10 to it
-    function getRandomLevelUp(uint256 _requestId)
-        external
-        view
-        returns (uint256 newLevelUp)
-    {
+    function getRandomLevelUp(uint256 _requestId, uint256 tokenId) external {
+        require(_exists(tokenId), "Please use an existing token");
+        require(
+            ownerOf(tokenId) == msg.sender,
+            "You must own this token to train it"
+        );
         require(s_requests[_requestId].paid > 0, "request not found");
         RequestStatus memory request = s_requests[_requestId];
         uint256 levelUp = request.randomWords[0];
-        newLevelUp = (levelUp % 10) + 1;
+        uint256 currentLevel = tokenIdToLevels[tokenId];
+        uint256 newLevelUp = (levelUp % 10) + 1;
 
-        return newLevelUp;
+        if (currentLevel + newLevelUp < 75) {
+            tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
+            _setTokenURI(tokenId, getTokenURI(tokenId));
+        } else if (currentLevel + newLevelUp >= targetScore) {
+            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
+            tokenIdToLevels[tokenId] = 0;
+        }
     }
 
     /**
@@ -194,18 +210,5 @@ contract CharacterCollector is
             link.transfer(msg.sender, link.balanceOf(address(this))),
             "Unable to transfer"
         );
-    }
-
-    // assigns the new random number to the level of the tokenID. This functionality will be built into the getRandomLevelUp function
-    function train(uint256 tokenId, uint256 randomRequestId) public {
-        require(_exists(tokenId), "Please use an existing token");
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "You must own this token to train it"
-        );
-        uint256 currentLevel = tokenIdToLevels[tokenId];
-        uint256 newLevelUp = getRandomLevelUp(randomRequestId);
-        tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
-        _setTokenURI(tokenId, getTokenURI(tokenId));
     }
 }
