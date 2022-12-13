@@ -35,6 +35,9 @@ contract CharacterCollector is
 
     mapping(uint256 => uint256) public tokenIdToLevels;
     mapping(uint256 => string) public tokenIdToName;
+    mapping(address => bool) public addressToHasMinted;
+    mapping(address => uint256) public addressToTokenId;
+    mapping(uint256 => uint256) public tokenIdToLastRequestId;
 
     uint256 targetScore = 75;
 
@@ -81,11 +84,11 @@ contract CharacterCollector is
             "<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>",
             '<rect width="100%" height="100%" fill="black" />',
             '<text x="50%" y="40%" class="base" dominant-baseline="middle" text-anchor="middle">',
-            getName(tokenId),
+            getName(),
             "</text>",
             '<text x="50%" y="50%" class="base" dominant-baseline="middle" text-anchor="middle">',
             "Levels: ",
-            getLevels(tokenId),
+            getLevels(),
             "</text>",
             "</svg>"
         );
@@ -98,16 +101,29 @@ contract CharacterCollector is
             );
     }
 
+    // function to get the token id minted by a particular address
+    function getTokenId() public view returns (uint256) {
+        return addressToTokenId[msg.sender];
+    }
+
     // returns current level of a token
-    function getLevels(uint256 tokenId) public view returns (string memory) {
+    function getLevels() public view returns (string memory) {
+        uint256 tokenId = getTokenId();
         uint256 levels = tokenIdToLevels[tokenId];
         return levels.toString();
     }
 
     // returns name of a token
-    function getName(uint256 tokenId) public view returns (string memory) {
+    function getName() public view returns (string memory) {
+        uint256 tokenId = getTokenId();
         string memory name = tokenIdToName[tokenId];
         return name;
+    }
+
+    // function to get the last VRF requestId of a particular token
+    function getLastRequestId() public view returns (uint256) {
+        uint256 tokenId = getTokenId();
+        return tokenIdToLastRequestId[tokenId];
     }
 
     // returns token URI of NFT
@@ -134,19 +150,22 @@ contract CharacterCollector is
 
     // function to mint a token
     function mint(string memory name) public {
+        require(
+            addressToHasMinted[msg.sender] == false,
+            "Only one NFT per address"
+        );
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
+        addressToHasMinted[msg.sender] = true;
         tokenIdToLevels[newItemId] = 0;
         tokenIdToName[newItemId] = name;
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
     // function to request the random number from Chainlink VRF
-    function requestRandomWords(uint256 tokenId)
-        external
-        returns (uint256 requestId)
-    {
+    function requestRandomWords() external returns (uint256 requestId) {
+        uint256 tokenId = getTokenId();
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
@@ -160,6 +179,7 @@ contract CharacterCollector is
         });
         requestIds.push(requestId);
         lastRequestId = requestId;
+        tokenIdToLastRequestId[tokenId] = requestId;
         emit RequestSent(tokenId, requestId, numWords);
         return requestId;
     }
@@ -180,7 +200,9 @@ contract CharacterCollector is
     }
 
     // gets the ramdom number that has been issued by the VRF and applies a range of 1 - 10 to it
-    function getRandomLevelUp(uint256 _requestId, uint256 tokenId) external {
+    function getRandomLevelUp() external {
+        uint256 tokenId = getTokenId();
+        uint256 _requestId = tokenIdToLastRequestId[tokenId];
         require(_exists(tokenId), "Please use an existing token");
         require(
             ownerOf(tokenId) == msg.sender,
@@ -196,7 +218,7 @@ contract CharacterCollector is
             tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
             _setTokenURI(tokenId, getTokenURI(tokenId));
         } else if (currentLevel + newLevelUp >= targetScore) {
-            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
+            emit WeHaveAWinner(tokenId, msg.sender, getName());
             tokenIdToLevels[tokenId] = 0;
         }
     }
