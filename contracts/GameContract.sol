@@ -217,7 +217,7 @@ contract CharacterCollector is
             tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
             _setTokenURI(tokenId, getTokenURI(tokenId));
         } else if (currentLevel + newLevelUp >= targetScore) {
-            emit WeHaveAWinner(tokenId, msg.sender, getName());
+            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
             tokenIdToLevels[tokenId] = 0;
         }
     }
