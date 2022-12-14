@@ -30,12 +30,10 @@ contract CharacterCollector is
     );
     event WeHaveAWinner(uint256 tokenId, address owner, string characterName);
 
-    // GAME MAPPINGS
+    // GAME MAPPINGS/SETTINGS
 
     mapping(uint256 => uint256) public tokenIdToLevels;
     mapping(uint256 => string) public tokenIdToName;
-    mapping(address => bool) public addressToHasMinted;
-    mapping(address => uint256) public addressToTokenId;
     mapping(uint256 => uint256) public tokenIdToLastRequestId;
 
     uint256 targetScore = 75;
@@ -43,7 +41,12 @@ contract CharacterCollector is
     struct Character {
         string name;
         uint256 tokenId;
+        bool playing;
+        uint256 level;
         uint256 lastLevelUp;
+        bool winStatus;
+        uint256 randomnessCounter;
+        uint256 levelUpCounter;
     }
 
     mapping(address => Character) ownerAddressToCharacterInfo;
@@ -84,33 +87,11 @@ contract CharacterCollector is
         VRFV2WrapperConsumerBase(linkAddress, wrapperAddress)
     {}
 
-    // generates SVG image containing the character name and level
-    function generateCharacter(uint256 tokenId) public returns (string memory) {
-        bytes memory svg = abi.encodePacked(
-            '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
-            "<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>",
-            '<rect width="100%" height="100%" fill="black" />',
-            '<text x="50%" y="40%" class="base" dominant-baseline="middle" text-anchor="middle">',
-            getName(tokenId),
-            "</text>",
-            '<text x="50%" y="50%" class="base" dominant-baseline="middle" text-anchor="middle">',
-            "Levels: ",
-            getLevels(tokenId),
-            "</text>",
-            "</svg>"
-        );
-        return
-            string(
-                abi.encodePacked(
-                    "data:image/svg+xml;base64,",
-                    Base64.encode(svg)
-                )
-            );
-    }
+    // GETTER FUNCTIONS
 
     // function to get the token id minted by a particular address
     function getTokenId() public view returns (uint256) {
-        return addressToTokenId[msg.sender];
+        return ownerAddressToCharacterInfo[msg.sender].tokenId;
     }
 
     // returns current level of a token
@@ -153,31 +134,66 @@ contract CharacterCollector is
             );
     }
 
+    // MAIN FUNCTIONS
+
+    // generates SVG image containing the character name and level
+    function generateCharacter(uint256 tokenId) public returns (string memory) {
+        bytes memory svg = abi.encodePacked(
+            '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
+            "<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>",
+            '<rect width="100%" height="100%" fill="black" />',
+            '<text x="50%" y="40%" class="base" dominant-baseline="middle" text-anchor="middle">',
+            getName(tokenId),
+            "</text>",
+            '<text x="50%" y="50%" class="base" dominant-baseline="middle" text-anchor="middle">',
+            "Levels: ",
+            getLevels(tokenId),
+            "</text>",
+            "</svg>"
+        );
+        return
+            string(
+                abi.encodePacked(
+                    "data:image/svg+xml;base64,",
+                    Base64.encode(svg)
+                )
+            );
+    }
+
     // function to mint a token
     function mint(string memory name) public {
         require(
-            addressToHasMinted[msg.sender] == false,
+            ownerAddressToCharacterInfo[msg.sender].playing == false,
             "Only one NFT per address"
         );
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
-        addressToHasMinted[msg.sender] = true;
         tokenIdToLevels[newItemId] = 0;
         ownerAddressToCharacterInfo[msg.sender] = Character({
             name: name,
             tokenId: newItemId,
-            lastLevelUp: block.timestamp
+            playing: true,
+            level: 0,
+            lastLevelUp: block.timestamp,
+            winStatus: false,
+            randomnessCounter: 0,
+            levelUpCounter: 0
         });
         tokenIdToName[newItemId] = name;
-        addressToTokenId[msg.sender] = newItemId;
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
     // function to request the random number from Chainlink VRF
     function requestRandomWords() external returns (uint256 requestId) {
-        require(addressToHasMinted[msg.sender] == true);
+        require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
+        require(ownerAddressToCharacterInfo[msg.sender].winStatus == false);
+
+        // increment the randomnessCounter
+        ownerAddressToCharacterInfo[msg.sender].randomnessCounter++;
+
         uint256 tokenId = getTokenId();
+
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
@@ -220,7 +236,13 @@ contract CharacterCollector is
             ownerOf(tokenId) == msg.sender,
             "You must own this token to train it"
         );
+        require(
+            ownerAddressToCharacterInfo[msg.sender].levelUpCounter <
+                ownerAddressToCharacterInfo[msg.sender].randomnessCounter,
+            "cannot attempt to level up without a new random number"
+        );
         require(s_requests[_requestId].paid > 0, "request not found");
+        ownerAddressToCharacterInfo[msg.sender].levelUpCounter++;
         RequestStatus memory request = s_requests[_requestId];
         uint256 levelUp = request.randomWords[0];
         uint256 currentLevel = tokenIdToLevels[tokenId];
@@ -231,7 +253,7 @@ contract CharacterCollector is
             _setTokenURI(tokenId, getTokenURI(tokenId));
         } else if (currentLevel + newLevelUp >= targetScore) {
             emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
-            tokenIdToLevels[tokenId] = 0;
+            ownerAddressToCharacterInfo[msg.sender].winStatus = true;
         }
     }
 
