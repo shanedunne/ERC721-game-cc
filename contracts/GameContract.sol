@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@chainlink/contracts/src/v0.8/VRFV2WrapperConsumerBase.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract CharacterCollector is
     ERC721URIStorage,
@@ -50,7 +49,7 @@ contract CharacterCollector is
     address linkAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
     address wrapperAddress = 0x99aFAf084eBA697E584501b8Ed2c0B37Dd136693;
     // The limit for how much gas to use for the callback request to your contract’s fulfillRandomWords() function.
-    uint32 callbackGasLimit = 100000;
+    uint32 callbackGasLimit = 300000;
 
     // Confirmations required before randomness can be provided
     uint16 requestConfirmations = 3;
@@ -88,7 +87,7 @@ contract CharacterCollector is
             "</text>",
             '<text x="50%" y="50%" class="base" dominant-baseline="middle" text-anchor="middle">',
             "Levels: ",
-            getLevels(),
+            getLevels(tokenId),
             "</text>",
             "</svg>"
         );
@@ -107,8 +106,7 @@ contract CharacterCollector is
     }
 
     // returns current level of a token
-    function getLevels() public view returns (string memory) {
-        uint256 tokenId = getTokenId();
+    function getLevels(uint256 tokenId) public view returns (string memory) {
         uint256 levels = tokenIdToLevels[tokenId];
         return levels.toString();
     }
@@ -159,16 +157,14 @@ contract CharacterCollector is
         addressToHasMinted[msg.sender] = true;
         tokenIdToLevels[newItemId] = 0;
         tokenIdToName[newItemId] = name;
+        addressToTokenId[msg.sender] = newItemId;
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
     // function to request the random number from Chainlink VRF
-    function requestRandomWords(uint256 tokenId)
-        external
-        returns (uint256 requestId)
-    {
+    function requestRandomWords() external returns (uint256 requestId) {
         require(addressToHasMinted[msg.sender] == true);
-        // uint256 tokenId = getTokenId();
+        uint256 tokenId = getTokenId();
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
@@ -203,8 +199,8 @@ contract CharacterCollector is
     }
 
     // gets the ramdom number that has been issued by the VRF and applies a range of 1 - 10 to it
-    function getRandomLevelUp(uint256 tokenId) external {
-        // uint256 tokenId = getTokenId();
+    function getRandomLevelUp() external {
+        uint256 tokenId = getTokenId();
         uint256 _requestId = tokenIdToLastRequestId[tokenId];
         require(_exists(tokenId), "Please use an existing token");
         require(
