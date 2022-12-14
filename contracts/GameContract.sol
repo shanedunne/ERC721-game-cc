@@ -40,6 +40,14 @@ contract CharacterCollector is
 
     uint256 targetScore = 75;
 
+    struct Character {
+        string name;
+        uint256 tokenId;
+        uint256 lastLevelUp;
+    }
+
+    mapping(address => Character) ownerAddressToCharacterInfo;
+
     // Chainlink VRF Configuration for Polygon Mumbai
 
     // LINK fee
@@ -156,6 +164,11 @@ contract CharacterCollector is
         _safeMint(msg.sender, newItemId);
         addressToHasMinted[msg.sender] = true;
         tokenIdToLevels[newItemId] = 0;
+        ownerAddressToCharacterInfo[msg.sender] = Character({
+            name: name,
+            tokenId: newItemId,
+            lastLevelUp: block.timestamp
+        });
         tokenIdToName[newItemId] = name;
         addressToTokenId[msg.sender] = newItemId;
         _setTokenURI(newItemId, getTokenURI(newItemId));
