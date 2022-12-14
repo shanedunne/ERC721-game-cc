@@ -163,8 +163,12 @@ contract CharacterCollector is
     }
 
     // function to request the random number from Chainlink VRF
-    function requestRandomWords() external returns (uint256 requestId) {
-        uint256 tokenId = getTokenId();
+    function requestRandomWords(uint256 tokenId)
+        external
+        returns (uint256 requestId)
+    {
+        require(addressToHasMinted[msg.sender] == true);
+        // uint256 tokenId = getTokenId();
         requestId = requestRandomness(
             callbackGasLimit,
             requestConfirmations,
@@ -199,8 +203,8 @@ contract CharacterCollector is
     }
 
     // gets the ramdom number that has been issued by the VRF and applies a range of 1 - 10 to it
-    function getRandomLevelUp() external {
-        uint256 tokenId = getTokenId();
+    function getRandomLevelUp(uint256 tokenId) external {
+        // uint256 tokenId = getTokenId();
         uint256 _requestId = tokenIdToLastRequestId[tokenId];
         require(_exists(tokenId), "Please use an existing token");
         require(
