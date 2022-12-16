@@ -11,6 +11,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { polygonMumbai } from "wagmi/chains";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import MintCard from "./components/Mint";
 
 const darkTheme = createTheme({
   palette: {
@@ -36,13 +37,12 @@ const wagmiClient = createClient({
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
-          <NavBar />
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </ThemeProvider>
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains}>
+        <NavBar />
+        <MintCard />
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 }
 
