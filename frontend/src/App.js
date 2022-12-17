@@ -12,6 +12,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { polygonMumbai } from "wagmi/chains";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import MintCard from "./components/Mint";
+import Leaderboard from "./components/Leaderboard";
 
 const darkTheme = createTheme({
   palette: {
@@ -41,6 +42,7 @@ function App() {
       <RainbowKitProvider chains={chains}>
         <NavBar />
         <MintCard />
+        <Leaderboard />
       </RainbowKitProvider>
     </WagmiConfig>
   );

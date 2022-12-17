@@ -7,7 +7,7 @@ import { WalletButton } from "./WalletButton";
 
 function NavBar() {
   return (
-    <AppBar position="static">
+    <AppBar position="static" className="nav-bar">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography

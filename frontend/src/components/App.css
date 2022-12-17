@@ -1,0 +1,12 @@
+/*Mint Form */
+
+.mint-card {
+  max-width: 25vw;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 15%;
+}
+
+.mint-button {
+  padding-top: 15px;
+}

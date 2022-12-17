@@ -9,27 +9,21 @@ import MintButton from "./MintButton";
 import TextField from "@mui/material/TextField";
 import "./App.css";
 
-export default function MintCard() {
+export default function LevelUpCard() {
   return (
     <div className="mint-card">
       <Card>
         <CardContent>
           <Typography variant="h5" component="div">
-            Mint Your Character
+            Level Up
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            Mint your character to begin the race to the top
+            Level up your character once every 24 hours. First one to 75 wins.
+            Level up scores will be random to all users.
           </Typography>
         </CardContent>
         <CardActions>
-          <form>
-            <TextField
-              id="outlined-basic"
-              label="Character Name"
-              variant="outlined"
-            />
-            <MintButton className="mint-button" />
-          </form>
+          <MintButton className="mint-button" />
         </CardActions>
       </Card>
     </div>
