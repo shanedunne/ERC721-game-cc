@@ -1,0 +1,25 @@
+/*Mint Form */
+
+.mint-card {
+  max-width: 25vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mint-card-inners {
+  text-align: center;
+}
+
+.mint-card-form {
+  justify-content: center;
+}
+
+.mint-button {
+  padding-top: 155px;
+  justify-content: center;
+}
+
+.table-container {
+  margin-left: auto;
+  margin-right: auto;
+}

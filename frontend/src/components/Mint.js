@@ -5,15 +5,24 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import MintButton from "./MintButton";
 import TextField from "@mui/material/TextField";
-import "./App.css";
+import "./Component.css";
+import Stack from "@mui/material/Stack";
+
+// button for the mint form
+export function MintButton() {
+  return (
+    <Stack spacing={2} direction="row">
+      <Button variant="contained">Mint</Button>
+    </Stack>
+  );
+}
 
 export default function MintCard() {
   return (
     <div className="mint-card">
       <Card>
-        <CardContent>
+        <CardContent className="mint-card-inners">
           <Typography variant="h5" component="div">
             Mint Your Character
           </Typography>
@@ -21,7 +30,7 @@ export default function MintCard() {
             Mint your character to begin the race to the top
           </Typography>
         </CardContent>
-        <CardActions>
+        <CardActions className="mint-card-form">
           <form>
             <TextField
               id="outlined-basic"

@@ -6,6 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import "./Component.css";
 
 function createData(name, owner, score) {
   return { name, owner, score };
@@ -19,12 +20,16 @@ const rows = [
 
 export default function Leaderboard() {
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer
+      component={Paper}
+      sx={{ maxWidth: 550 }}
+      className="table-container"
+    >
+      <Table aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Character</TableCell>
-            <TableCell align="right">Owner</TableCell>
+            <TableCell align="center">Owner</TableCell>
             <TableCell align="right">Score</TableCell>
           </TableRow>
         </TableHead>

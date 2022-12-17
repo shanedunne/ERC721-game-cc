@@ -5,9 +5,18 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import MintButton from "./MintButton";
 import TextField from "@mui/material/TextField";
 import "./App.css";
+import Stack from "@mui/material/Stack";
+
+// button to level up
+export function LevelUpButton() {
+  return (
+    <Stack spacing={2} direction="row">
+      <Button variant="contained">Mint</Button>
+    </Stack>
+  );
+}
 
 export default function LevelUpCard() {
   return (
@@ -23,7 +32,7 @@ export default function LevelUpCard() {
           </Typography>
         </CardContent>
         <CardActions>
-          <MintButton className="mint-button" />
+          <LevelUpButton className="mint-button" />
         </CardActions>
       </Card>
     </div>
