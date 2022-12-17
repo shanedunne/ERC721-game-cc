@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import "./App.css";
 import NavBar from "./components/navbar";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -38,9 +39,29 @@ const wagmiClient = createClient({
 });
 
 function App() {
+  // current account state
+  const [currentAccount, setCurrentAccount] = useState("");
+
+  const getAddress = async () => {
+    const { ethereum } = window;
+
+    const accounts = await ethereum.request({ method: "eth_accounts" });
+    console.log("accounts: ", accounts);
+
+    if (accounts.length > 0) {
+      const account = accounts[0];
+      console.log("wallet is connected! " + account);
+      setCurrentAccount(account);
+      console.log("current account is" + currentAccount);
+    } else {
+      console.log("make sure MetaMask is connected");
+    }
+  };
+
+  getAddress();
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProvider chains={chains} coolMode>
         <NavBar />
 
         <Grid

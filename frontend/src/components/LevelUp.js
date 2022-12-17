@@ -13,7 +13,7 @@ import Stack from "@mui/material/Stack";
 export function LevelUpButton() {
   return (
     <Stack spacing={2} direction="row">
-      <Button variant="contained">Mint</Button>
+      <Button variant="contained">Level Up</Button>
     </Stack>
   );
 }
