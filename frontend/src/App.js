@@ -13,6 +13,9 @@ import { polygonMumbai } from "wagmi/chains";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import MintCard from "./components/Mint";
 import Leaderboard from "./components/Leaderboard";
+import Grid from "@mui/material/Grid"; // Grid version 1
+
+import Grid2 from "@mui/material/Unstable_Grid2"; // Grid version 2
 
 const darkTheme = createTheme({
   palette: {
@@ -41,8 +44,15 @@ function App() {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <NavBar />
-        <MintCard />
-        <Leaderboard />
+
+        <Grid container spacing={2}>
+          <Grid xs={6}>
+            <MintCard />
+          </Grid>
+          <Grid xs={6}>
+            <Leaderboard />
+          </Grid>
+        </Grid>
       </RainbowKitProvider>
     </WagmiConfig>
   );
