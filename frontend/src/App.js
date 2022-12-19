@@ -43,7 +43,7 @@ const wagmiClient = createClient({
 function App() {
   // contract constants
   const contractAddress = "0x53EdD2d8F7BAE16995E315eF7b1bF9c67cA14717";
-  const contractABI = abi.abi;
+  const contractABI = abi;
 
   // current account state
   const [currentAccount, setCurrentAccount] = useState("");
@@ -77,18 +77,18 @@ function App() {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
+        console.log("address here: " + signer);
         const verifyMintStatus = new ethers.Contract(
           contractAddress,
           contractABI,
           signer
         );
 
-        let hasMintedCheck = await verifyMintStatus.ownerAddressToCharacterInfo(
-          currentAccount
-        ).tokenId;
-        if (hasMinted > 0) {
+        const balance = await verifyMintStatus.balanceOf(currentAccount);
+
+        if (balance > 0) {
           setHasMinted(true);
-          console.log("token ID" + hasMintedCheck);
+          console.log("token ID" + balance);
         } else {
           console.log("has not minted - display mint page");
         }
@@ -98,7 +98,6 @@ function App() {
     }
   };
 
-  getAddress();
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} coolMode>
