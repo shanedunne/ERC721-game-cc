@@ -42,13 +42,15 @@ const wagmiClient = createClient({
 
 function App() {
   // contract constants
-  const contractAddress = "0x53EdD2d8F7BAE16995E315eF7b1bF9c67cA14717";
+  const contractAddress = "0x1Fcd3e4D2B20F791caf81000FB13AFF1d709eac1";
   const contractABI = abi;
 
   // current account state
   const [currentAccount, setCurrentAccount] = useState("");
   const [hasMinted, setHasMinted] = useState("");
   const [name, setName] = useState("");
+  const [tokenId, setTokenId] = useState("");
+  const [level, setLevel] = useState("");
 
   // to be called when the page is loaded
   useEffect(() => {
@@ -89,9 +91,37 @@ function App() {
         if (balance > 0) {
           setHasMinted(true);
           console.log("token ID" + balance);
+          getCharacterInfo();
         } else {
           console.log("has not minted - display mint page");
         }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCharacterInfo = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const getInfo = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        const characterStructData = await getInfo.ownerAddressToCharacterInfo(
+          currentAccount
+        );
+        let charName = characterStructData[0];
+        let charTokenId = characterStructData[1];
+        let characterLevel = characterStructData[3];
+
+        setName(charName);
+        setTokenId(charTokenId);
+        setLevel(characterLevel);
       }
     } catch (error) {
       console.log(error);

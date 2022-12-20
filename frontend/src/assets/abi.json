@@ -443,6 +443,60 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "ownerAddressToCharacterInfo",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "playing",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "level",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastLevelUp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "winStatus",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "randomnessCounter",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "levelUpCounter",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"

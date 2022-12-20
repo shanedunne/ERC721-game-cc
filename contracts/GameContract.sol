@@ -49,7 +49,7 @@ contract CharacterCollector is
         uint256 levelUpCounter;
     }
 
-    mapping(address => Character) ownerAddressToCharacterInfo;
+    mapping(address => Character) public ownerAddressToCharacterInfo;
 
     // Chainlink VRF Configuration for Polygon Mumbai
 
