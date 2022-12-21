@@ -55,8 +55,7 @@ function App() {
   // to be called when the page is loaded
   useEffect(() => {
     getAddress();
-    checkIfHasMinted();
-  });
+  }, []);
 
   const getAddress = async () => {
     const { ethereum } = window;
@@ -68,6 +67,7 @@ function App() {
       const account = accounts[0];
       console.log("wallet is connected! " + account);
       setCurrentAccount(account);
+      checkIfHasMinted();
     } else {
       console.log("make sure MetaMask is connected");
     }
@@ -77,16 +77,25 @@ function App() {
     try {
       const { ethereum } = window;
       if (ethereum) {
+        // get provider
         const provider = new ethers.providers.Web3Provider(ethereum);
+
+        // get signer
         const signer = provider.getSigner();
         console.log("address here: " + signer);
+
+        // create address instance
         const verifyMintStatus = new ethers.Contract(
           contractAddress,
           contractABI,
           signer
         );
 
-        const balance = await verifyMintStatus.balanceOf(currentAccount);
+        // get accounts. This has been added again for now as useState does not seem to save quickly enough
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        const account = accounts[0];
+        console.log("account check" + account);
+        const balance = await verifyMintStatus.balanceOf(account);
 
         if (balance > 0) {
           setHasMinted(true);
@@ -112,8 +121,11 @@ function App() {
           contractABI,
           signer
         );
+        // get accounts. This has been added again for now as useState does not seem to save quickly enough
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        const account = accounts[0];
         const characterStructData = await getInfo.ownerAddressToCharacterInfo(
-          currentAccount
+          account
         );
         let charName = characterStructData[0];
         let charTokenId = characterStructData[1];
