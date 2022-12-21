@@ -15,6 +15,7 @@ import { polygonMumbai } from "wagmi/chains";
 import { ethers } from "ethers";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import MintCard from "./components/Mint";
+import LevelUpCard from "./components/LevelUp";
 import Leaderboard from "./components/Leaderboard";
 import Grid from "@mui/material/Grid";
 
@@ -155,9 +156,7 @@ function App() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Grid xs={6}>
-            <MintCard />
-          </Grid>
+          <Grid xs={6}>{hasMinted ? <LevelUpCard /> : <MintCard />}</Grid>
           <Grid xs={6}>
             <Leaderboard />
           </Grid>
