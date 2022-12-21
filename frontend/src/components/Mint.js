@@ -8,17 +8,17 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import "./Component.css";
 import Stack from "@mui/material/Stack";
+import App from "../App";
 
 // button for the mint form
-export function MintButton() {
+const MintButton = () => {
   return (
     <Stack spacing={2} direction="row">
       <Button variant="contained">Mint</Button>
     </Stack>
   );
-}
-
-export default function MintCard() {
+};
+const MintCard = ({ mintCharacter }) => {
   return (
     <div className="mint-card">
       <Card>
@@ -37,10 +37,13 @@ export default function MintCard() {
               label="Character Name"
               variant="outlined"
             />
-            <MintButton className="mint-button" />
+            <button className="mint-button" onClick={() => mintCharacter()}>
+              Test
+            </button>
           </form>
         </CardActions>
       </Card>
     </div>
   );
-}
+};
+export default MintCard;

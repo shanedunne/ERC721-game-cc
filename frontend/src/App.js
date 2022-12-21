@@ -141,6 +141,35 @@ function App() {
     }
   };
 
+  const mintCharacter = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const minter = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        // get accounts. This has been added again for now as useState does not seem to save quickly enough
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        const account = accounts[0];
+        console.log("Mint process has begun");
+
+        const newCharacter = minter.mint("test name");
+        await newCharacter.wait();
+        console.log(newCharacter.hash);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const testFunction = async () => {
+    console.log("success in passing the button controls");
+    alert("success");
+  };
+
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} coolMode>
@@ -156,7 +185,13 @@ function App() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Grid xs={6}>{hasMinted ? <LevelUpCard /> : <MintCard />}</Grid>
+          <Grid xs={6}>
+            {hasMinted ? (
+              <LevelUpCard />
+            ) : (
+              <MintCard mintCharacter={mintCharacter} />
+            )}
+          </Grid>
           <Grid xs={6}>
             <Leaderboard />
           </Grid>
