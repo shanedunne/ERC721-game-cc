@@ -31,16 +31,14 @@ const MintCard = ({ mintCharacter }) => {
           </Typography>
         </CardContent>
         <CardActions className="mint-card-form">
-          <form>
-            <TextField
-              id="outlined-basic"
-              label="Character Name"
-              variant="outlined"
-            />
-            <button className="mint-button" onClick={() => mintCharacter()}>
-              Test
-            </button>
-          </form>
+          <TextField
+            id="outlined-basic"
+            label="Character Name"
+            variant="outlined"
+          />
+          <button className="mint-button" onClick={() => mintCharacter()}>
+            Test
+          </button>
         </CardActions>
       </Card>
     </div>

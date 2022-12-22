@@ -157,17 +157,13 @@ function App() {
         const account = accounts[0];
         console.log("Mint process has begun");
 
-        const newCharacter = minter.mint("test name");
+        const newCharacter = minter.mint("test string");
         await newCharacter.wait();
         console.log(newCharacter.hash);
       }
     } catch (error) {
       console.log(error);
     }
-  };
-  const testFunction = async () => {
-    console.log("success in passing the button controls");
-    alert("success");
   };
 
   return (
@@ -185,14 +181,14 @@ function App() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Grid xs={6}>
+          <Grid item xs={6}>
             {hasMinted ? (
               <LevelUpCard />
             ) : (
               <MintCard mintCharacter={mintCharacter} />
             )}
           </Grid>
-          <Grid xs={6}>
+          <Grid item xs={6}>
             <Leaderboard />
           </Grid>
         </Grid>
