@@ -18,7 +18,7 @@ export function LevelUpButton() {
   );
 }
 
-export default function LevelUpCard() {
+export default function LevelUpCard({ levelUp }) {
   return (
     <div className="mint-card">
       <Card>
@@ -32,7 +32,9 @@ export default function LevelUpCard() {
           </Typography>
         </CardContent>
         <CardActions>
-          <LevelUpButton className="mint-button" />
+          <button className="mint-button" onClick={() => levelUp()}>
+            Level Up
+          </button>
         </CardActions>
       </Card>
     </div>

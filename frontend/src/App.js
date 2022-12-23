@@ -164,7 +164,7 @@ function App() {
 
         console.log("character name" + newName);
 
-        const newCharacter = minter.mint(newName);
+        const newCharacter = await minter.mint(newName);
         await newCharacter.wait();
         console.log(newCharacter.hash);
       }
@@ -190,13 +190,21 @@ function App() {
         console.log("Level up process has begun");
 
         // call for random words from Chainlink VRF
-        const randomNumber = leveler.requestRandomWords();
+        const randomNumber = await leveler.requestRandomWords();
+        console.log("Request sent to Chainlink VRF");
 
         // Wait for random words to be returned
         await randomNumber.wait();
+        console.log(
+          "Random number returned. Initiating level up functionality"
+        );
         // send the ramdom number from Chainlink VRF through the modulos calculation and add to character
-        const levelUpTx = leveler.getRandomLevelUp();
+        const levelUpTx = await leveler.getRandomLevelUp();
+
+        console.log("awaiting confirmation was a success");
         await levelUpTx();
+
+        console.log("Level up complete. Checking new level");
 
         // find out what the characters new level is
         const getLevel = await leveler.ownerAddressToCharacterInfo(account);
@@ -226,7 +234,7 @@ function App() {
         >
           <Grid item xs={6}>
             {hasMinted ? (
-              <LevelUpCard />
+              <LevelUpCard levelUp={levelUp} />
             ) : (
               <MintCard mintCharacter={mintCharacter} />
             )}
