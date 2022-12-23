@@ -18,7 +18,7 @@ const MintButton = () => {
     </Stack>
   );
 };
-const MintCard = ({ mintCharacter }) => {
+const MintCard = ({ mintCharacter, onNameChange }) => {
   return (
     <div className="mint-card">
       <Card>
@@ -35,6 +35,7 @@ const MintCard = ({ mintCharacter }) => {
             id="outlined-basic"
             label="Character Name"
             variant="outlined"
+            onChange={() => onNameChange()}
           />
           <button className="mint-button" onClick={() => mintCharacter()}>
             Test

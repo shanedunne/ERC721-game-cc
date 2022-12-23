@@ -50,6 +50,7 @@ function App() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [hasMinted, setHasMinted] = useState("");
   const [name, setName] = useState("");
+  const [newName, setNewName] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [level, setLevel] = useState("");
 
@@ -57,6 +58,10 @@ function App() {
   useEffect(() => {
     getAddress();
   }, []);
+  const onNameChange = (event) => {
+    setNewName(event.target.value);
+    console.log(newName);
+  };
 
   const getAddress = async () => {
     const { ethereum } = window;
@@ -157,9 +162,47 @@ function App() {
         const account = accounts[0];
         console.log("Mint process has begun");
 
-        const newCharacter = minter.mint("test string");
+        console.log("character name" + newName);
+
+        const newCharacter = minter.mint(newName);
         await newCharacter.wait();
         console.log(newCharacter.hash);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const levelUp = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const leveler = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        // get accounts. This has been added again for now as useState does not seem to save quickly enough
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        const account = accounts[0];
+        console.log("Level up process has begun");
+
+        // call for random words from Chainlink VRF
+        const randomNumber = leveler.requestRandomWords();
+
+        // Wait for random words to be returned
+        await randomNumber.wait();
+        // send the ramdom number from Chainlink VRF through the modulos calculation and add to character
+        const levelUpTx = leveler.getRandomLevelUp();
+        await levelUpTx();
+
+        // find out what the characters new level is
+        const getLevel = await leveler.ownerAddressToCharacterInfo(account);
+        let charName = getLevel[0];
+        let newLevel = getLevel[3];
+        console.log(`${charName}'s new level is ${newLevel}`);
       }
     } catch (error) {
       console.log(error);
