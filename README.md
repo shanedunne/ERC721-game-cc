@@ -13,3 +13,8 @@ npx hardhat run scripts/deploy.js
 ```
 
 # ERC721-game-cc
+
+## To Do
+
+Issues with name being passed to parent component
+Level up function is failing from the frontend

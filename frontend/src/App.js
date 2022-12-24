@@ -148,6 +148,7 @@ function App() {
 
   const mintCharacter = async () => {
     try {
+      // general ethereum set up
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
@@ -164,7 +165,10 @@ function App() {
 
         console.log("character name" + newName);
 
+        // call mint function
+
         const newCharacter = await minter.mint(newName);
+        // wait for the transaction to be minee
         await newCharacter.wait();
         console.log(newCharacter.hash);
       }
@@ -187,10 +191,10 @@ function App() {
         // get accounts. This has been added again for now as useState does not seem to save quickly enough
         const accounts = await ethereum.request({ method: "eth_accounts" });
         const account = accounts[0];
-        console.log("Level up process has begun");
 
         // call for random words from Chainlink VRF
         const randomNumber = await leveler.requestRandomWords();
+        console.log("Level up process has begun");
         console.log("Request sent to Chainlink VRF");
 
         // Wait for random words to be returned
@@ -202,7 +206,7 @@ function App() {
         const levelUpTx = await leveler.getRandomLevelUp();
 
         console.log("awaiting confirmation was a success");
-        await levelUpTx();
+        await levelUpTx.wait();
 
         console.log("Level up complete. Checking new level");
 
