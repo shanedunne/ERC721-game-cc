@@ -43,7 +43,7 @@ const wagmiClient = createClient({
 
 function App() {
   // contract constants
-  const contractAddress = "0x1Fcd3e4D2B20F791caf81000FB13AFF1d709eac1";
+  const contractAddress = "0x663a8694a8637c2d965Fd311Ed7B54750A37f377";
   const contractABI = abi;
 
   // current account state
@@ -209,6 +209,12 @@ function App() {
         await levelUpTx.wait();
 
         console.log("Level up complete. Checking new level");
+
+        console.log("Event info below");
+        console.log(levelUpTx.events[0]);
+
+        console.log("second test of events below");
+        console.log(levelUpTx.events[0].args.name);
 
         // find out what the characters new level is
         const getLevel = await leveler.ownerAddressToCharacterInfo(account);
