@@ -29,6 +29,12 @@ contract CharacterCollector is
         uint256 payment
     );
     event WeHaveAWinner(uint256 tokenId, address owner, string characterName);
+    event LevelUpEvent(
+        uint256 tokenId,
+        address owner,
+        string characterName,
+        uint256 currentLevel
+    );
 
     // GAME MAPPINGS/SETTINGS
 
@@ -251,6 +257,12 @@ contract CharacterCollector is
         if (currentLevel + newLevelUp < 75) {
             tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
             _setTokenURI(tokenId, getTokenURI(tokenId));
+            emit LevelUpEvent(
+                tokenId,
+                msg.sender,
+                ownerAddressToCharacterInfo[msg.sender].name,
+                tokenIdToLevels[tokenId]
+            );
         } else if (currentLevel + newLevelUp >= targetScore) {
             emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
             ownerAddressToCharacterInfo[msg.sender].winStatus = true;
