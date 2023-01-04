@@ -57,6 +57,7 @@ function App() {
   // to be called when the page is loaded
   useEffect(() => {
     getAddress();
+    getLeaderboard();
   }, []);
   const onNameChange = (event) => {
     setNewName(event.target.value);
@@ -206,7 +207,10 @@ function App() {
           "Random number returned. Initiating level up functionality"
         );
         // send the ramdom number from Chainlink VRF through the modulos calculation and add to character
-        const levelUpTx = await leveler.getRandomLevelUp();
+        const levelUpTx = await leveler.getRandomLevelUp({
+          gasLimit: 1000000,
+          gasPrice: 30000000000,
+        });
 
         console.log("awaiting confirmation was a success");
         await levelUpTx.wait();
@@ -224,6 +228,33 @@ function App() {
         let charName = getLevel[0];
         let newLevel = getLevel[3];
         console.log(`${charName}'s new level is ${newLevel}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getLeaderboard = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const levelCheckInstance = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        await provider.on("block", async (blockNumber) => {
+          // This line of code listens to the block mining and every time a block is mined
+          const levelCheck = await levelCheckInstance.queryFilter(
+            "LevelUpEvent",
+            blockNumber - 1,
+            blockNumber
+          );
+
+          console.log("Most recent level up event: " + levelCheck);
+        });
       }
     } catch (error) {
       console.log(error);
