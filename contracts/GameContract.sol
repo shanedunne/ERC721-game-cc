@@ -192,8 +192,11 @@ contract CharacterCollector is
 
     // function to request the random number from Chainlink VRF
     function requestRandomWords() external returns (uint256 requestId) {
-        require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
-        require(ownerAddressToCharacterInfo[msg.sender].winStatus == false);
+        // require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
+        require(
+            ownerAddressToCharacterInfo[msg.sender].winStatus == false,
+            "You have already won"
+        );
 
         // increment the randomnessCounter
         ownerAddressToCharacterInfo[msg.sender].randomnessCounter++;

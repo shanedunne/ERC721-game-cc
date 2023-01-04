@@ -43,7 +43,7 @@ const wagmiClient = createClient({
 
 function App() {
   // contract constants
-  const contractAddress = "0x663a8694a8637c2d965Fd311Ed7B54750A37f377";
+  const contractAddress = "0x0fCB9993bccA1d159bAA6506340738F106417Aa4";
   const contractABI = abi;
 
   // current account state
@@ -193,7 +193,10 @@ function App() {
         const account = accounts[0];
 
         // call for random words from Chainlink VRF
-        const randomNumber = await leveler.requestRandomWords();
+        const randomNumber = await leveler.requestRandomWords({
+          gasLimit: 1000000,
+          gasPrice: 30000000000,
+        });
         console.log("Level up process has begun");
         console.log("Request sent to Chainlink VRF");
 
