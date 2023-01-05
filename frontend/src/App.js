@@ -217,17 +217,15 @@ function App() {
 
         console.log("Level up complete. Checking new level");
 
-        console.log("Event info below");
-        console.log(levelUpTx.events[0]);
-
-        console.log("second test of events below");
-        console.log(levelUpTx.events[0].args.name);
-
         // find out what the characters new level is
         const getLevel = await leveler.ownerAddressToCharacterInfo(account);
         let charName = getLevel[0];
         let newLevel = getLevel[3];
         console.log(`${charName}'s new level is ${newLevel}`);
+
+        console.log("calling leaderboard event listener");
+        getLeaderboard();
+        console.log("event listener has been called");
       }
     } catch (error) {
       console.log(error);
@@ -238,23 +236,28 @@ function App() {
     try {
       const { ethereum } = window;
       if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
+        const provider = new ethers.providers.WebSocketProvider(
+          "wss://polygon-mumbai.g.alchemy.com/v2/d-qKmYky4kiu0xT-UN3Xo3w6dq3Pd4vx"
+        );
         const levelCheckInstance = new ethers.Contract(
           contractAddress,
           contractABI,
-          signer
+          provider
         );
-        await provider.on("block", async (blockNumber) => {
-          // This line of code listens to the block mining and every time a block is mined
-          const levelCheck = await levelCheckInstance.queryFilter(
-            "LevelUpEvent",
-            blockNumber - 1,
-            blockNumber
-          );
 
-          console.log("Most recent level up event: " + levelCheck);
-        });
+        levelCheckInstance.on(
+          "LevelUpEvent",
+          (tokenId, owner, characterName, currentLevel) => {
+            let eventInfo = {
+              tokenId: tokenId,
+              owner: owner,
+              characterName: characterName,
+              currentLevel: currentLevel,
+            };
+
+            console.log("test emit" + JSON.stringify(eventInfo, null, 4));
+          }
+        );
       }
     } catch (error) {
       console.log(error);
