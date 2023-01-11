@@ -244,17 +244,25 @@ function App() {
           contractABI,
           provider
         );
+        async function hexConverter(target) {
+          // let string = toString(target);
+          let string = await target.substring(2);
+          let result = parseInt(string, 16);
+
+          return result;
+        }
 
         levelCheckInstance.on(
           "LevelUpEvent",
-          (owner, characterName, currentLevel) => {
+          (tokenId, owner, characterName, currentLevel) => {
             let eventInfo = {
+              tokenId: hexConverter(tokenId.hex),
               owner: owner,
               characterName: characterName,
-              currentLevel: currentLevel,
+              currentLevel: hexConverter(currentLevel.hex),
             };
 
-            console.log("test emit" + JSON.stringify(eventInfo, null, 4));
+            console.log("test emit " + JSON.stringify(eventInfo, null, 4));
           }
         );
       }
