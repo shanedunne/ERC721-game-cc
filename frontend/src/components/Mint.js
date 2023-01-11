@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -18,7 +18,14 @@ const MintButton = () => {
     </Stack>
   );
 };
-const MintCard = ({ mintCharacter, onNameChange }) => {
+const MintCard = ({ mintCharacter }) => {
+  const [newName, setNewName] = useState("");
+  // set name on child element to be passed as a parameter on the mintCharacter function
+  const onNameChange = (event) => {
+    setNewName(event.target.value);
+    console.log(newName);
+  };
+
   return (
     <div className="mint-card">
       <Card>
@@ -35,10 +42,13 @@ const MintCard = ({ mintCharacter, onNameChange }) => {
             id="outlined-basic"
             label="Character Name"
             variant="outlined"
-            onChange={() => onNameChange()}
+            onChange={onNameChange}
           />
-          <button className="mint-button" onClick={() => mintCharacter()}>
-            Test
+          <button
+            className="mint-button"
+            onClick={() => mintCharacter(newName)}
+          >
+            Mint
           </button>
         </CardActions>
       </Card>
@@ -46,3 +56,5 @@ const MintCard = ({ mintCharacter, onNameChange }) => {
   );
 };
 export default MintCard;
+
+// () => props.mintSetName("prop name");

@@ -147,7 +147,7 @@ function App() {
     }
   };
 
-  const mintCharacter = async () => {
+  const mintCharacter = async (propsName) => {
     try {
       // general ethereum set up
       const { ethereum } = window;
@@ -164,11 +164,11 @@ function App() {
         const account = accounts[0];
         console.log("Mint process has begun");
 
-        console.log("character name" + newName);
+        console.log("character name" + propsName);
 
         // call mint function
 
-        const newCharacter = await minter.mint(newName);
+        const newCharacter = await minter.mint(propsName);
         // wait for the transaction to be minee
         await newCharacter.wait();
         console.log(newCharacter.hash);
@@ -281,7 +281,7 @@ function App() {
         >
           <Grid item xs={6}>
             {hasMinted ? (
-              <LevelUpCard levelUp={levelUp} />
+              <LevelUpCard />
             ) : (
               <MintCard mintCharacter={mintCharacter} />
             )}
