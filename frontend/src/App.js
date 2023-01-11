@@ -247,9 +247,8 @@ function App() {
 
         levelCheckInstance.on(
           "LevelUpEvent",
-          (tokenId, owner, characterName, currentLevel) => {
+          (owner, characterName, currentLevel) => {
             let eventInfo = {
-              tokenId: tokenId,
               owner: owner,
               characterName: characterName,
               currentLevel: currentLevel,
@@ -281,7 +280,7 @@ function App() {
         >
           <Grid item xs={6}>
             {hasMinted ? (
-              <LevelUpCard />
+              <LevelUpCard levelUp={levelUp} />
             ) : (
               <MintCard mintCharacter={mintCharacter} />
             )}

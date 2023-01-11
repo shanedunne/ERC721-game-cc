@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,14 +8,19 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./Component.css";
 
-export default function Leaderboard() {
-  const [players, setPlayers] = useState([]);
+function createData(name, owner, score) {
+  return { name, owner, score };
+}
 
-  const [groupKey, setGroupKey] = useState([]);
+const rows = [
+  createData("Horsey", "0x00000000219ab540356cbb839cbe05303d7705fa", 33),
+  createData("Pony", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", 914),
+  createData("Capaill", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8", 9),
+];
 
-  useEffect(() => {
-    setGroupKey(Object.keys(players));
-  }, [players]);
+let tableData = {};
+
+export default function Leaderboardbackup() {
   return (
     <TableContainer
       component={Paper}
@@ -31,16 +36,16 @@ export default function Leaderboard() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {groupKey.map((item, index) => (
+          {rows.map((row) => (
             <TableRow
-              key={index}
+              key={row.name}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {item.name}
+                {row.name}
               </TableCell>
-              <TableCell align="right">{item.owner}</TableCell>
-              <TableCell align="right">{item.score}</TableCell>
+              <TableCell align="right">{row.owner}</TableCell>
+              <TableCell align="right">{row.score}</TableCell>
             </TableRow>
           ))}
         </TableBody>
