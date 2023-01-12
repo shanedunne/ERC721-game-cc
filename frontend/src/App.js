@@ -53,6 +53,7 @@ function App() {
   const [newName, setNewName] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [level, setLevel] = useState("");
+  const [players, setPlayers] = useState([]);
 
   // to be called when the page is loaded
   useEffect(() => {
@@ -62,6 +63,10 @@ function App() {
   const onNameChange = (event) => {
     setNewName(event.target.value);
     console.log(newName);
+  };
+
+  const addPlayer = async (newPlayer) => {
+    setPlayers([...players, newPlayer]);
   };
 
   const getAddress = async () => {
@@ -224,7 +229,7 @@ function App() {
         console.log(`${charName}'s new level is ${newLevel}`);
 
         console.log("calling leaderboard event listener");
-        getLeaderboard();
+        await getLeaderboard();
         console.log("event listener has been called");
       }
     } catch (error) {
@@ -246,23 +251,25 @@ function App() {
         );
         async function hexConverter(target) {
           // let string = toString(target);
-          let string = await target.substring(2);
+          let string = target.substring(2);
           let result = parseInt(string, 16);
 
           return result;
         }
 
-        levelCheckInstance.on(
+        await levelCheckInstance.on(
           "LevelUpEvent",
           (tokenId, owner, characterName, currentLevel) => {
             let eventInfo = {
               tokenId: hexConverter(tokenId.hex),
               owner: owner,
               characterName: characterName,
-              currentLevel: hexConverter(currentLevel.hex),
+              currentLevel: currentLevel.hex,
             };
 
             console.log("test emit " + JSON.stringify(eventInfo, null, 4));
+            addPlayer(eventInfo);
+            console.log("player successfully added");
           }
         );
       }
@@ -294,7 +301,7 @@ function App() {
             )}
           </Grid>
           <Grid item xs={6}>
-            <Leaderboard />
+            <Leaderboard players={players} setPlayers={setPlayers} />
           </Grid>
         </Grid>
       </RainbowKitProvider>

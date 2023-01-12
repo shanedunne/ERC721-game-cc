@@ -8,14 +8,17 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./Component.css";
 
-export default function Leaderboard() {
-  const [players, setPlayers] = useState([]);
+export default function Leaderboard(props) {
+  const [playersList, setPlayersList] = useState(props.players);
 
   const [groupKey, setGroupKey] = useState([]);
-
   useEffect(() => {
-    setGroupKey(Object.keys(players));
-  }, [players]);
+    setPlayersList(props.players);
+    console.log("test adding players" + playersList);
+  });
+  useEffect(() => {
+    setGroupKey(Object.keys(playersList));
+  }, [playersList]);
   return (
     <TableContainer
       component={Paper}
