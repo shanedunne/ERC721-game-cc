@@ -29,8 +29,13 @@ contract CharacterCollector is
         uint256 payment
     );
     event WeHaveAWinner(uint256 tokenId, address owner, string characterName);
+    event PlayerAdded(
+        address owner,
+        string characterName,
+        uint256 currentLevel
+    );
+
     event LevelUpEvent(
-        uint256 tokenId,
         address owner,
         string characterName,
         uint256 currentLevel
@@ -188,6 +193,11 @@ contract CharacterCollector is
         });
         tokenIdToName[newItemId] = name;
         _setTokenURI(newItemId, getTokenURI(newItemId));
+        emit PlayerAdded(
+            msg.sender,
+            ownerAddressToCharacterInfo[msg.sender].name,
+            0
+        );
     }
 
     // function to request the random number from Chainlink VRF
@@ -261,7 +271,6 @@ contract CharacterCollector is
             tokenIdToLevels[tokenId] = currentLevel + newLevelUp;
             _setTokenURI(tokenId, getTokenURI(tokenId));
             emit LevelUpEvent(
-                tokenId,
                 msg.sender,
                 ownerAddressToCharacterInfo[msg.sender].name,
                 tokenIdToLevels[tokenId]

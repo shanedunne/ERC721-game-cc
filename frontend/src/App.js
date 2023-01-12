@@ -43,7 +43,7 @@ const wagmiClient = createClient({
 
 function App() {
   // contract constants
-  const contractAddress = "0x0fCB9993bccA1d159bAA6506340738F106417Aa4";
+  const contractAddress = "0x08E33E7849FFfBAF1B7881ce8db427Ea4A207B96";
   const contractABI = abi;
 
   // current account state
