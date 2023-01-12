@@ -65,9 +65,27 @@ function App() {
     console.log(newName);
   };
 
+  // add a new player to the leaderboard
   const addPlayer = async (newPlayer) => {
     setPlayers([...players, newPlayer]);
   };
+
+  // update a players score if they have levelled up
+  const updatePlayer = (player, key, value) => {
+    const index = players.indexOf(player);
+    const newPlayers = [...players];
+    newPlayers[index][key] = value;
+    setPlayers = newPlayers;
+  };
+
+  // hex converter function
+  async function hexConverter(target) {
+    // let string = toString(target);
+    let string = target.substring(2);
+    let result = parseInt(string, 16);
+
+    return result;
+  }
 
   const getAddress = async () => {
     const { ethereum } = window;
@@ -262,13 +280,6 @@ function App() {
           contractABI,
           provider
         );
-        async function hexConverter(target) {
-          // let string = toString(target);
-          let string = target.substring(2);
-          let result = parseInt(string, 16);
-
-          return result;
-        }
 
         await levelCheckInstance.on(
           "LevelUpEvent",
@@ -280,7 +291,8 @@ function App() {
             };
 
             console.log("test emit " + JSON.stringify(eventInfo, null, 4));
-            addPlayer(eventInfo);
+
+            updatePlayer(eventInfo.owner, currentLevel, eventInfo.currentLevel);
             console.log("player successfully added");
           }
         );
