@@ -177,6 +177,19 @@ function App() {
         // wait for the transaction to be minee
         await newCharacter.wait();
         console.log(newCharacter.hash);
+
+        // catch player info with event
+        await minter.on("PlayerAdded", (owner, characterName, currentLevel) => {
+          let eventInfo = {
+            owner: owner,
+            characterName: characterName,
+            currentLevel: currentLevel,
+          };
+
+          console.log("test emit " + JSON.stringify(eventInfo, null, 4));
+          addPlayer(eventInfo);
+          console.log("player successfully added");
+        });
       }
     } catch (error) {
       console.log(error);
@@ -259,9 +272,8 @@ function App() {
 
         await levelCheckInstance.on(
           "LevelUpEvent",
-          (tokenId, owner, characterName, currentLevel) => {
+          (owner, characterName, currentLevel) => {
             let eventInfo = {
-              tokenId: hexConverter(tokenId.hex),
               owner: owner,
               characterName: characterName,
               currentLevel: currentLevel.hex,
