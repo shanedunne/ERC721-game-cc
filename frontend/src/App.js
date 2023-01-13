@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import abi from "./assets/abi.json";
+import BigNumber from "bignumber.js";
 import "./App.css";
 import NavBar from "./components/navbar";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -50,9 +51,11 @@ function App() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [hasMinted, setHasMinted] = useState("");
   const [name, setName] = useState("");
+  const [owner, setOwner] = useState("");
   const [newName, setNewName] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [level, setLevel] = useState("");
+  const [newLevel, setNewLevel] = useState();
   const [players, setPlayers] = useState([]);
 
   // to be called when the page is loaded
@@ -80,9 +83,7 @@ function App() {
 
   // hex converter function
   async function hexConverter(target) {
-    // let string = toString(target);
-    let string = target.substring(2);
-    let result = parseInt(string, 16);
+    let result = new BigNumber(target, 16).toString();
 
     return result;
   }
@@ -260,7 +261,7 @@ function App() {
         console.log(`${charName}'s new level is ${newLevel}`);
 
         console.log("calling leaderboard event listener");
-        await getLeaderboard();
+        getLeaderboard();
         console.log("event listener has been called");
       }
     } catch (error) {
@@ -280,22 +281,28 @@ function App() {
           contractABI,
           provider
         );
-
         await levelCheckInstance.on(
           "LevelUpEvent",
           (owner, characterName, currentLevel) => {
+            console.log("test print" + owner, characterName, currentLevel);
             let eventInfo = {
               owner: owner,
               characterName: characterName,
-              currentLevel: currentLevel.hex,
+              currentLevel: currentLevel,
             };
 
-            console.log("test emit " + JSON.stringify(eventInfo, null, 4));
+            setOwner(eventInfo.owner);
+            setName(eventInfo.characterName);
+            setNewLevel(eventInfo.currentLevel);
 
-            updatePlayer(eventInfo.owner, currentLevel, eventInfo.currentLevel);
+            console.log(
+              "Testing useState " + owner + name + hexConverter(newLevel._hex)
+            );
+
             console.log("player successfully added");
           }
         );
+        // addPlayer(eventInfo);
       }
     } catch (error) {
       console.log(error);

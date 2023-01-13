@@ -14,7 +14,7 @@ export default function Leaderboard(props) {
   const [groupKey, setGroupKey] = useState([]);
   useEffect(() => {
     setPlayersList(props.players);
-    console.log("test adding players" + playersList);
+    console.log("test adding players" + JSON.stringify(playersList, null, 4));
   });
   useEffect(() => {
     setGroupKey(Object.keys(playersList));
