@@ -55,7 +55,7 @@ function App() {
   const [newName, setNewName] = useState("");
   const [tokenId, setTokenId] = useState("");
   const [level, setLevel] = useState("");
-  const [newLevel, setNewLevel] = useState();
+  const [newLevel, setNewLevel] = useState("");
   const [players, setPlayers] = useState([]);
 
   // to be called when the page is loaded
@@ -80,13 +80,6 @@ function App() {
     newPlayers[index][key] = value;
     setPlayers = newPlayers;
   };
-
-  // hex converter function
-  async function hexConverter(target) {
-    let result = new BigNumber(target, 16).toString();
-
-    return result;
-  }
 
   const getAddress = async () => {
     const { ethereum } = window;
@@ -284,25 +277,10 @@ function App() {
         await levelCheckInstance.on(
           "LevelUpEvent",
           (owner, characterName, currentLevel) => {
-            console.log("test print" + owner, characterName, currentLevel);
-            let eventInfo = {
-              owner: owner,
-              characterName: characterName,
-              currentLevel: currentLevel,
-            };
-
-            setOwner(eventInfo.owner);
-            setName(eventInfo.characterName);
-            setNewLevel(eventInfo.currentLevel);
-
-            console.log(
-              "Testing useState " + owner + name + hexConverter(newLevel._hex)
-            );
-
+            addPlayer([owner, characterName, currentLevel.toString()]);
             console.log("player successfully added");
           }
         );
-        // addPlayer(eventInfo);
       }
     } catch (error) {
       console.log(error);
