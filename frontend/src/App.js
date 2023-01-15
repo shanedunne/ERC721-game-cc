@@ -192,14 +192,7 @@ function App() {
 
         // catch player info with event
         await minter.on("PlayerAdded", (owner, characterName, currentLevel) => {
-          let eventInfo = {
-            owner: owner,
-            characterName: characterName,
-            currentLevel: currentLevel,
-          };
-
-          console.log("test emit " + JSON.stringify(eventInfo, null, 4));
-          addPlayer(eventInfo);
+          addPlayer({ name: characterName, owner: owner, score: currentLevel });
           console.log("player successfully added");
         });
       }
