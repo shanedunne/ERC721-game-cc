@@ -277,7 +277,11 @@ function App() {
         await levelCheckInstance.on(
           "LevelUpEvent",
           (owner, characterName, currentLevel) => {
-            addPlayer([owner, characterName, currentLevel.toString()]);
+            addPlayer({
+              name: characterName,
+              owner: owner,
+              score: currentLevel.toString(),
+            });
             console.log("player successfully added");
           }
         );

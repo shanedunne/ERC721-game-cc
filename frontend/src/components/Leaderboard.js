@@ -12,12 +12,14 @@ export default function Leaderboard(props) {
   const [playersList, setPlayersList] = useState(props.players);
 
   const [groupKey, setGroupKey] = useState([]);
+  // sets playerList from info from parent component
   useEffect(() => {
     setPlayersList(props.players);
     console.log("test adding players" + JSON.stringify(playersList, null, 4));
-  });
+  }, [props.players]);
   useEffect(() => {
     setGroupKey(Object.keys(playersList));
+    console.log("group key check: " + groupKey);
   }, [playersList]);
   return (
     <TableContainer
@@ -40,10 +42,10 @@ export default function Leaderboard(props) {
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {item.name}
+                {playersList[item].name}
               </TableCell>
-              <TableCell align="right">{item.owner}</TableCell>
-              <TableCell align="right">{item.score}</TableCell>
+              <TableCell align="right">{playersList[item].owner}</TableCell>
+              <TableCell align="right">{playersList[item].score}</TableCell>
             </TableRow>
           ))}
         </TableBody>
