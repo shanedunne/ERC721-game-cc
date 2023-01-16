@@ -58,6 +58,7 @@ function App() {
   const [level, setLevel] = useState("");
   const [newLevel, setNewLevel] = useState("");
   const [players, setPlayers] = useState([]);
+  const [playersUpdated, setPlayersUpdated] = useState(false);
 
   // to be called when the page is loaded
   useEffect(() => {
@@ -205,6 +206,7 @@ function App() {
             .catch((error) => {
               console.log(error);
             });
+          setPlayersUpdated(true);
           console.log("player successfully added");
         });
       }
@@ -278,6 +280,7 @@ function App() {
               .catch((error) => {
                 console.log(error);
               });
+            setPlayersUpdated(true);
             console.log("player successfully added");
           }
         );
@@ -341,7 +344,11 @@ function App() {
             )}
           </Grid>
           <Grid item xs={6}>
-            <Leaderboard players={players} setPlayers={setPlayers} />
+            <Leaderboard
+              playersUpdated={playersUpdated}
+              players={players}
+              setPlayers={setPlayers}
+            />
           </Grid>
         </Grid>
       </RainbowKitProvider>

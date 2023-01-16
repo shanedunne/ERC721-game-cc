@@ -9,18 +9,37 @@ import Paper from "@mui/material/Paper";
 import "./Component.css";
 
 export default function Leaderboard(props) {
-  const [playersList, setPlayersList] = useState(props.players);
+  const [playersList, setPlayersList] = useState([]);
 
   const [groupKey, setGroupKey] = useState([]);
   // sets playerList from info from parent component
+
+  const [objects, setObjects] = useState([]);
   useEffect(() => {
-    setPlayersList(props.players);
-    console.log("test adding players" + JSON.stringify(playersList, null, 4));
-  }, [props.players]);
+    axios
+      .get("http://localhost:3000/players")
+      .then((response) => {
+        setPlayersList(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [updated]);
   useEffect(() => {
     setGroupKey(Object.keys(playersList));
     console.log("group key check: " + groupKey);
   }, [playersList]);
+
+  function getPlayers() {
+    axios
+      .get("http://localhost:3000/players")
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <TableContainer
       component={Paper}

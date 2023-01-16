@@ -47,6 +47,16 @@ app.put("/players/:owner", (req, res) => {
   );
 });
 
+app.get("/players", (req, res) => {
+  PlayerModel.find({}, (err, players) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(players);
+    }
+  });
+});
+
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
