@@ -259,6 +259,28 @@ function App() {
         console.log(`${charName}'s new level is ${newLevel}`);
 
         console.log("calling leaderboard event listener");
+        await leveler.on(
+          "LevelUpEvent",
+          (owner, characterName, currentLevel) => {
+            let updatedPlayer = {
+              name: characterName,
+              owner: owner,
+              score: currentLevel.toString(),
+            };
+            axios
+              .put(
+                "http://localhost:3000/players/" + updatedPlayer.owner,
+                updatedPlayer
+              )
+              .then((response) => {
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            console.log("player successfully added");
+          }
+        );
         getLeaderboard();
         console.log("event listener has been called");
       }

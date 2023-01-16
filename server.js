@@ -32,6 +32,21 @@ app.post("/players", (req, res) => {
   });
 });
 
+app.put("/players/:owner", (req, res) => {
+  ObjectModel.findOneAndUpdate(
+    { owner: req.params.owner },
+    req.body,
+    { new: true },
+    (err, player) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.send(player);
+      }
+    }
+  );
+});
+
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
