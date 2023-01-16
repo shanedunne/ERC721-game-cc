@@ -19,6 +19,7 @@ import MintCard from "./components/Mint";
 import LevelUpCard from "./components/LevelUp";
 import Leaderboard from "./components/Leaderboard";
 import Grid from "@mui/material/Grid";
+import axios from "axios";
 
 const darkTheme = createTheme({
   palette: {
@@ -192,7 +193,18 @@ function App() {
 
         // catch player info with event
         await minter.on("PlayerAdded", (owner, characterName, currentLevel) => {
-          addPlayer({ name: characterName, owner: owner, score: currentLevel });
+          axios
+            .post("http://localhost:3000/players", {
+              name: characterName,
+              owner: owner,
+              score: currentLevel.toString(),
+            })
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           console.log("player successfully added");
         });
       }
