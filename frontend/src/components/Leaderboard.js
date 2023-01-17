@@ -7,6 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./Component.css";
+import axios from "axios";
 
 export default function Leaderboard(props) {
   const [playersList, setPlayersList] = useState([]);
@@ -24,7 +25,7 @@ export default function Leaderboard(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, [updated]);
+  }, [props.playersUpdated]);
   useEffect(() => {
     setGroupKey(Object.keys(playersList));
     console.log("group key check: " + groupKey);
