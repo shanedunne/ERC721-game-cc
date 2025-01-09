@@ -56,7 +56,7 @@ createAppKit({
 
 export default function App() {
 // contract constants
-const contractAddress = "0xe71BcbBfaeff72D0AD5619142fC8be9755AfA561";
+const contractAddress = "0x3c85bEA24639c001E053e80Ca3A764cDc160cb91";
 const contractABI = abi;
 
 // current account state

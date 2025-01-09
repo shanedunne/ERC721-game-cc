@@ -74,6 +74,12 @@
         "internalType": "uint256",
         "name": "currentLevel",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameSession",
+        "type": "uint256"
       }
     ],
     "name": "LevelUpEvent",
@@ -136,6 +142,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "currentLevel",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameSession",
         "type": "uint256"
       }
     ],
@@ -237,9 +249,28 @@
         "internalType": "string",
         "name": "characterName",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameSession",
+        "type": "uint256"
       }
     ],
     "name": "WeHaveAWinner",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "gameSession",
+        "type": "uint256"
+      }
+    ],
+    "name": "newGameSessionStarted",
     "type": "event"
   },
   {
@@ -302,7 +333,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -411,7 +442,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -511,11 +542,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "bool",
-        "name": "playing",
-        "type": "bool"
-      },
-      {
         "internalType": "uint256",
         "name": "level",
         "type": "uint256"
@@ -538,6 +564,11 @@
       {
         "internalType": "uint256",
         "name": "levelUpCounter",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gameSession",
         "type": "uint256"
       }
     ],

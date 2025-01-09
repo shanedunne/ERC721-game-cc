@@ -216,6 +216,7 @@ contract CharacterCollector is
     // function to request the random number from Chainlink VRF
     function requestRandomWords() external returns (uint256 requestId) {
         // require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
+        require(ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession);
         require(
             ownerAddressToCharacterInfo[msg.sender].winStatus == false,
             "You have already won"
@@ -266,7 +267,7 @@ contract CharacterCollector is
         require(_exists(tokenId), "Please use an existing token");
         require(
             ownerOf(tokenId) == msg.sender,
-            "You must own this token to train it"
+            "You must own this token to level up"
         );
         require(
             ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession,
