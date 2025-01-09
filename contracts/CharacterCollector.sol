@@ -28,17 +28,22 @@ contract CharacterCollector is
         uint256[] randomWords,
         uint256 payment
     );
-    event WeHaveAWinner(uint256 tokenId, address owner, string characterName);
+    event WeHaveAWinner(uint256 tokenId, address owner, string characterName, uint256 gameSession);
+
+    event newGameSessionStarted(uint256 gameSession);
+
     event PlayerAdded(
         address owner,
         string characterName,
-        uint256 currentLevel
+        uint256 currentLevel,
+        uint256 gameSession
     );
 
     event LevelUpEvent(
         address owner,
         string characterName,
-        uint256 currentLevel
+        uint256 currentLevel,
+        uint256 gameSession
     );
 
     // GAME MAPPINGS/SETTINGS
@@ -47,18 +52,21 @@ contract CharacterCollector is
     mapping(uint256 => string) public tokenIdToName;
     mapping(uint256 => uint256) public tokenIdToLastRequestId;
 
+    // Game session
+    uint256 gameSession = 1;
 
+    // Target score
     uint256 targetScore = 75;
 
     struct Character {
         string name;
         uint256 tokenId;
-        bool playing;
         uint256 level;
         uint256 lastLevelUp;
         bool winStatus;
         uint256 randomnessCounter;
         uint256 levelUpCounter;
+        uint256 gameSession;
     }
 
     mapping(address => Character) public ownerAddressToCharacterInfo;
@@ -66,7 +74,7 @@ contract CharacterCollector is
     // Chainlink VRF Configuration for Base Sepoila
 
     // LINK fee
-    uint256 fee = 0.0001 * 10**18;
+    uint256 fee = 0.0001 * 10 ** 18;
     bytes32 keyHash =
         0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71;
     address linkAddress = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
@@ -87,7 +95,8 @@ contract CharacterCollector is
         bool fulfilled; // whether the request has been successfully fulfilled
         uint256[] randomWords;
     }
-    mapping(uint256 => RequestStatus) public s_requests; /* requestId --> requestStatus */
+    mapping(uint256 => RequestStatus)
+        public s_requests; /* requestId --> requestStatus */
 
     // past requests Id.
     uint256[] public requestIds;
@@ -125,7 +134,7 @@ contract CharacterCollector is
     }
 
     // returns token URI of NFT
-    function getTokenURI(uint256 tokenId) public returns (string memory) {
+    function getTokenURI(uint256 tokenId) public view returns (string memory) {
         bytes memory dataURI = abi.encodePacked(
             "{",
             '"name": "Character Collector #',
@@ -149,7 +158,9 @@ contract CharacterCollector is
     // MAIN FUNCTIONS
 
     // generates SVG image containing the character name and level
-    function generateCharacter(uint256 tokenId) public returns (string memory) {
+    function generateCharacter(
+        uint256 tokenId
+    ) public view returns (string memory) {
         bytes memory svg = abi.encodePacked(
             '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
             "<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>",
@@ -174,9 +185,9 @@ contract CharacterCollector is
 
     // function to mint a token
     function mint(string memory name) public {
+        // ensure the user is not participating in this game session
         require(
-            ownerAddressToCharacterInfo[msg.sender].playing == false,
-            "Only one NFT per address"
+            ownerAddressToCharacterInfo[msg.sender].gameSession != gameSession
         );
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
@@ -185,19 +196,20 @@ contract CharacterCollector is
         ownerAddressToCharacterInfo[msg.sender] = Character({
             name: name,
             tokenId: newItemId,
-            playing: true,
             level: 0,
             lastLevelUp: block.timestamp,
             winStatus: false,
             randomnessCounter: 0,
-            levelUpCounter: 0
+            levelUpCounter: 0,
+            gameSession: gameSession
         });
         tokenIdToName[newItemId] = name;
         _setTokenURI(newItemId, getTokenURI(newItemId));
         emit PlayerAdded(
             msg.sender,
             ownerAddressToCharacterInfo[msg.sender].name,
-            0
+            0,
+            gameSession
         );
     }
 
@@ -257,6 +269,10 @@ contract CharacterCollector is
             "You must own this token to train it"
         );
         require(
+            ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession,
+            "User not participating in current game session"
+        );
+        require(
             ownerAddressToCharacterInfo[msg.sender].levelUpCounter <
                 ownerAddressToCharacterInfo[msg.sender].randomnessCounter,
             "cannot attempt to level up without a new random number"
@@ -274,11 +290,13 @@ contract CharacterCollector is
             emit LevelUpEvent(
                 msg.sender,
                 ownerAddressToCharacterInfo[msg.sender].name,
-                tokenIdToLevels[tokenId]
+                tokenIdToLevels[tokenId], gameSession
             );
         } else if (currentLevel + newLevelUp >= targetScore) {
-            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId));
+            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId), gameSession);
             ownerAddressToCharacterInfo[msg.sender].winStatus = true;
+            gameSession++;
+            emit newGameSessionStarted(gameSession);
         }
     }
 
