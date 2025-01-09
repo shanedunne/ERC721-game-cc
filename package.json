@@ -11,11 +11,13 @@
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.12",
     "hardhat": "^2.12.4"
   },
   "dependencies": {
     "@chainlink/contracts": "^0.5.1",
     "@openzeppelin/contracts": "^4.8.0",
+    "@web3-storage/w3up-client": "^17.1.2",
     "axios": "^1.2.2",
     "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",

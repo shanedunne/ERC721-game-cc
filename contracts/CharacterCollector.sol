@@ -47,6 +47,7 @@ contract CharacterCollector is
     mapping(uint256 => string) public tokenIdToName;
     mapping(uint256 => uint256) public tokenIdToLastRequestId;
 
+
     uint256 targetScore = 75;
 
     struct Character {
@@ -62,14 +63,14 @@ contract CharacterCollector is
 
     mapping(address => Character) public ownerAddressToCharacterInfo;
 
-    // Chainlink VRF Configuration for Polygon Mumbai
+    // Chainlink VRF Configuration for Base Sepoila
 
     // LINK fee
     uint256 fee = 0.0001 * 10**18;
     bytes32 keyHash =
-        0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
-    address linkAddress = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
-    address wrapperAddress = 0x99aFAf084eBA697E584501b8Ed2c0B37Dd136693;
+        0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71;
+    address linkAddress = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
+    address wrapperAddress = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
     // The limit for how much gas to use for the callback request to your contract’s fulfillRandomWords() function.
     uint32 callbackGasLimit = 300000;
 

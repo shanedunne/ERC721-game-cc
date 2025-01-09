@@ -1,3 +1,5 @@
+const hre = require("hardhat");
+
 const main = async () => {
   try {
     const nftContractFactory = await hre.ethers.getContractFactory(

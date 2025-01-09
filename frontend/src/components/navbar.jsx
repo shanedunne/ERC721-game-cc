@@ -3,7 +3,8 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { WalletButton } from "./WalletButton";
+import Box from "@mui/material/Box";
+import ConnectButton from "./ConnectButton";
 
 function NavBar() {
   return (
@@ -45,7 +46,8 @@ function NavBar() {
           >
             CHARACTER LEVEL UP
           </Typography>
-          <WalletButton />
+          <Box sx={{ flexGrow: 1 }} />
+          <ConnectButton />
         </Toolbar>
       </Container>
     </AppBar>
