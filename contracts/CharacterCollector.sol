@@ -28,7 +28,12 @@ contract CharacterCollector is
         uint256[] randomWords,
         uint256 payment
     );
-    event WeHaveAWinner(uint256 tokenId, address owner, string characterName, uint256 gameSession);
+    event WeHaveAWinner(
+        uint256 tokenId,
+        address owner,
+        string characterName,
+        uint256 gameSession
+    );
 
     event newGameSessionStarted(uint256 gameSession);
 
@@ -106,7 +111,9 @@ contract CharacterCollector is
         ERC721("Character Collector", "CC")
         ConfirmedOwner(msg.sender)
         VRFV2WrapperConsumerBase(linkAddress, wrapperAddress)
-    {}
+    {
+        emit newGameSessionStarted(gameSession);
+    }
 
     // GETTER FUNCTIONS
 
@@ -216,7 +223,9 @@ contract CharacterCollector is
     // function to request the random number from Chainlink VRF
     function requestRandomWords() external returns (uint256 requestId) {
         // require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
-        require(ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession);
+        require(
+            ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession
+        );
         require(
             ownerAddressToCharacterInfo[msg.sender].winStatus == false,
             "You have already won"
@@ -291,10 +300,16 @@ contract CharacterCollector is
             emit LevelUpEvent(
                 msg.sender,
                 ownerAddressToCharacterInfo[msg.sender].name,
-                tokenIdToLevels[tokenId], gameSession
+                tokenIdToLevels[tokenId],
+                gameSession
             );
         } else if (currentLevel + newLevelUp >= targetScore) {
-            emit WeHaveAWinner(tokenId, msg.sender, getName(tokenId), gameSession);
+            emit WeHaveAWinner(
+                tokenId,
+                msg.sender,
+                getName(tokenId),
+                gameSession
+            );
             ownerAddressToCharacterInfo[msg.sender].winStatus = true;
             gameSession++;
             emit newGameSessionStarted(gameSession);

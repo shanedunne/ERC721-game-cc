@@ -1,0 +1,56 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: CharacterCollector
+    network: base-sepolia
+    source:
+      address: "0x1f3CF6f99bb7f53bC860e546B3098c3B4A76BfE0"
+      abi: CharacterCollector
+      startBlock: 20339705
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - LevelUpEvent
+        - OwnershipTransferRequested
+        - OwnershipTransferred
+        - PlayerAdded
+        - RequestFulfilled
+        - RequestSent
+        - Transfer
+        - WeHaveAWinner
+        - newGameSessionStarted
+      abis:
+        - name: CharacterCollector
+          file: ./abis/CharacterCollector.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: LevelUpEvent(address,string,uint256,uint256)
+          handler: handleLevelUpEvent
+        - event: OwnershipTransferRequested(indexed address,indexed address)
+          handler: handleOwnershipTransferRequested
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PlayerAdded(address,string,uint256,uint256)
+          handler: handlePlayerAdded
+        - event: RequestFulfilled(uint256,uint256[],uint256)
+          handler: handleRequestFulfilled
+        - event: RequestSent(uint256,uint256,uint32)
+          handler: handleRequestSent
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: WeHaveAWinner(uint256,address,string,uint256)
+          handler: handleWeHaveAWinner
+        - event: newGameSessionStarted(uint256)
+          handler: handlenewGameSessionStarted
+      file: ./src/character-collector.ts
