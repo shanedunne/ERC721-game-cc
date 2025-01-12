@@ -60,7 +60,7 @@ export default function Leaderboard() {
                 {player.characterName}
               </TableCell>
               <TableCell align="right">{player.owner}</TableCell>
-              <TableCell align="right">{player.score}</TableCell>
+              <TableCell align="right">{player.currentLevel}</TableCell>
             </TableRow>
           ))}
         </TableBody>
