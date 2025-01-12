@@ -69,7 +69,6 @@ export default function App() {
   const [playersUpdated, setPlayersUpdated] = useState(false);
 
 
-
   // call appkit hook to get info on address
   const { address, isConnected, caipAddress, status } = useAppKitAccount();
 
