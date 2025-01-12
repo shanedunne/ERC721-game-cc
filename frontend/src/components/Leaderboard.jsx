@@ -8,39 +8,34 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./Component.css";
 import axios from "axios";
+import { GET_PLAYERS } from "../subgraph/queries";
+import { useQuery } from '@apollo/client';
 
-export default function Leaderboard(props) {
+
+export default function Leaderboard() {
   const [playersList, setPlayersList] = useState([]);
-
   const [groupKey, setGroupKey] = useState([]);
-  // sets playerList from info from parent component
 
-  const [objects, setObjects] = useState([]);
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/players")
-      .then((response) => {
-        setPlayersList(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [props.playersUpdated]);
-  useEffect(() => {
-    setGroupKey(Object.keys(playersList));
-    console.log("group key check: " + groupKey);
-  }, [playersList]);
 
-  function getPlayers() {
-    axios
-      .get("http://localhost:3000/players")
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  const { loading, error, data } = useQuery(GET_PLAYERS);
+
+  useEffect(() => {
+    if(!loading && data) {
+      console.log("fetching data from the subgraph: " + data.playerAddeds)
+      setPlayersList(data.playerAddeds)
+
+      console.log("playerlIST: " + playersList)
+    }
+
+
+
+  }, [loading, data]);
+
+  if(loading) console.log("fetching players from graph");
+  if (error) console.log("error fetching players");
+
+
+
   return (
     <TableContainer
       component={Paper}
@@ -56,16 +51,16 @@ export default function Leaderboard(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {groupKey.map((item, index) => (
+          {playersList.map((player, index) => (
             <TableRow
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {playersList[item].name}
+                {player.characterName}
               </TableCell>
-              <TableCell align="right">{playersList[item].owner}</TableCell>
-              <TableCell align="right">{playersList[item].score}</TableCell>
+              <TableCell align="right">{player.owner}</TableCell>
+              <TableCell align="right">{player.score}</TableCell>
             </TableRow>
           ))}
         </TableBody>

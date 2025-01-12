@@ -14,6 +14,8 @@ import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
 import { baseSepolia } from "@reown/appkit/networks";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { useQuery } from '@apollo/client';
+
 
 // 1. Get projectId
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
@@ -66,10 +68,7 @@ export default function App() {
   const [players, setPlayers] = useState([]);
   const [playersUpdated, setPlayersUpdated] = useState(false);
 
-  // to be called when the page is loaded
-  useEffect(() => {
-    getLeaderboard();
-  }, []);
+
 
   // call appkit hook to get info on address
   const { address, isConnected, caipAddress, status } = useAppKitAccount();
@@ -321,34 +320,6 @@ const contractCallSetup = (method) => {
     }
   };
 
-  const getLeaderboard = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.WebSocketProvider(
-          import.meta.env.VITE_ALCHEMY_ID
-        );
-        const levelCheckInstance = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          provider
-        );
-        await levelCheckInstance.on(
-          "LevelUpEvent",
-          (owner, characterName, currentLevel) => {
-            addPlayer({
-              name: characterName,
-              owner: owner,
-              score: currentLevel.toString(),
-            });
-            console.log("player successfully added");
-          }
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -372,9 +343,6 @@ const contractCallSetup = (method) => {
         </Grid>
         <Grid item xs={6}>
           <Leaderboard
-            playersUpdated={playersUpdated}
-            players={players}
-            setPlayers={setPlayers}
           />
         </Grid>
       </Grid>
