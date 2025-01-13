@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: CharacterCollector
-    network: base-sepolia
+    network: arbitrum-sepolia
     source:
       address: "0x1f3CF6f99bb7f53bC860e546B3098c3B4A76BfE0"
       abi: CharacterCollector
-      startBlock: 20339705
+      startBlock: 114600710
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -18,7 +18,9 @@ dataSources:
       entities:
         - Approval
         - ApprovalForAll
+        - BatchMetadataUpdate
         - LevelUpEvent
+        - MetadataUpdate
         - OwnershipTransferRequested
         - OwnershipTransferred
         - PlayerAdded
@@ -35,8 +37,12 @@ dataSources:
           handler: handleApproval
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
+        - event: BatchMetadataUpdate(uint256,uint256)
+          handler: handleBatchMetadataUpdate
         - event: LevelUpEvent(address,string,uint256,uint256)
           handler: handleLevelUpEvent
+        - event: MetadataUpdate(uint256)
+          handler: handleMetadataUpdate
         - event: OwnershipTransferRequested(indexed address,indexed address)
           handler: handleOwnershipTransferRequested
         - event: OwnershipTransferred(indexed address,indexed address)

@@ -1,7 +1,9 @@
 import {
   Approval as ApprovalEvent,
   ApprovalForAll as ApprovalForAllEvent,
+  BatchMetadataUpdate as BatchMetadataUpdateEvent,
   LevelUpEvent as LevelUpEventEvent,
+  MetadataUpdate as MetadataUpdateEvent,
   OwnershipTransferRequested as OwnershipTransferRequestedEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   PlayerAdded as PlayerAddedEvent,
@@ -14,7 +16,9 @@ import {
 import {
   Approval,
   ApprovalForAll,
+  BatchMetadataUpdate,
   LevelUpEvent,
+  MetadataUpdate,
   OwnershipTransferRequested,
   OwnershipTransferred,
   PlayerAdded,
@@ -55,6 +59,22 @@ export function handleApprovalForAll(event: ApprovalForAllEvent): void {
   entity.save()
 }
 
+export function handleBatchMetadataUpdate(
+  event: BatchMetadataUpdateEvent
+): void {
+  let entity = new BatchMetadataUpdate(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity._fromTokenId = event.params._fromTokenId
+  entity._toTokenId = event.params._toTokenId
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
 export function handleLevelUpEvent(event: LevelUpEventEvent): void {
   let entity = new LevelUpEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32())
@@ -63,6 +83,19 @@ export function handleLevelUpEvent(event: LevelUpEventEvent): void {
   entity.characterName = event.params.characterName
   entity.currentLevel = event.params.currentLevel
   entity.gameSession = event.params.gameSession
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleMetadataUpdate(event: MetadataUpdateEvent): void {
+  let entity = new MetadataUpdate(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  )
+  entity._tokenId = event.params._tokenId
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

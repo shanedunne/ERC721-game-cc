@@ -1,8 +1,8 @@
 {
-  "base-sepolia": {
+  "arbitrum-sepolia": {
     "CharacterCollector": {
       "address": "0x1f3CF6f99bb7f53bC860e546B3098c3B4A76BfE0",
-      "startBlock": 20339705
+      "startBlock": 114600710
     }
   }
 }

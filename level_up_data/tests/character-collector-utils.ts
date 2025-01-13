@@ -3,7 +3,9 @@ import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   Approval,
   ApprovalForAll,
+  BatchMetadataUpdate,
   LevelUpEvent,
+  MetadataUpdate,
   OwnershipTransferRequested,
   OwnershipTransferred,
   PlayerAdded,
@@ -61,6 +63,30 @@ export function createApprovalForAllEvent(
   return approvalForAllEvent
 }
 
+export function createBatchMetadataUpdateEvent(
+  _fromTokenId: BigInt,
+  _toTokenId: BigInt
+): BatchMetadataUpdate {
+  let batchMetadataUpdateEvent = changetype<BatchMetadataUpdate>(newMockEvent())
+
+  batchMetadataUpdateEvent.parameters = new Array()
+
+  batchMetadataUpdateEvent.parameters.push(
+    new ethereum.EventParam(
+      "_fromTokenId",
+      ethereum.Value.fromUnsignedBigInt(_fromTokenId)
+    )
+  )
+  batchMetadataUpdateEvent.parameters.push(
+    new ethereum.EventParam(
+      "_toTokenId",
+      ethereum.Value.fromUnsignedBigInt(_toTokenId)
+    )
+  )
+
+  return batchMetadataUpdateEvent
+}
+
 export function createLevelUpEventEvent(
   owner: Address,
   characterName: string,
@@ -94,6 +120,21 @@ export function createLevelUpEventEvent(
   )
 
   return levelUpEventEvent
+}
+
+export function createMetadataUpdateEvent(_tokenId: BigInt): MetadataUpdate {
+  let metadataUpdateEvent = changetype<MetadataUpdate>(newMockEvent())
+
+  metadataUpdateEvent.parameters = new Array()
+
+  metadataUpdateEvent.parameters.push(
+    new ethereum.EventParam(
+      "_tokenId",
+      ethereum.Value.fromUnsignedBigInt(_tokenId)
+    )
+  )
+
+  return metadataUpdateEvent
 }
 
 export function createOwnershipTransferRequestedEvent(

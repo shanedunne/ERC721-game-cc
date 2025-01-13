@@ -18,12 +18,29 @@ type ApprovalForAll @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type BatchMetadataUpdate @entity(immutable: true) {
+  id: Bytes!
+  _fromTokenId: BigInt! # uint256
+  _toTokenId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 type LevelUpEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   characterName: String! # string
   currentLevel: BigInt! # uint256
   gameSession: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MetadataUpdate @entity(immutable: true) {
+  id: Bytes!
+  _tokenId: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
