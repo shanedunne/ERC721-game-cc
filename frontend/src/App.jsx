@@ -12,16 +12,16 @@ import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { baseSepolia } from "@reown/appkit/networks";
+import { arbitrumSepolia, baseSepolia } from "@reown/appkit/networks";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useQuery } from '@apollo/client';
-
+import { GET_GAME_SESSIONS } from "./subgraph/queries";
+import { useQuery } from "@apollo/client";
 
 // 1. Get projectId
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
 
 // 2. Set the networks
-const networks = [baseSepolia];
+const networks = [baseSepolia, arbitrumSepolia];
 
 const theme = createTheme({
   palette: {
@@ -67,7 +67,7 @@ export default function App() {
   const [newLevel, setNewLevel] = useState("");
   const [players, setPlayers] = useState([]);
   const [playersUpdated, setPlayersUpdated] = useState(false);
-
+  const [gameSession, setGameSession] = useState([]);
 
   // call appkit hook to get info on address
   const { address, isConnected, caipAddress, status } = useAppKitAccount();
@@ -84,6 +84,21 @@ export default function App() {
       console.log("No wallet connected");
     }
   }, [isConnected, address]);
+
+  /* get current game session
+
+  const { loading, error, data } = useQuery(GET_GAME_SESSIONS);
+
+  useEffect(() => {
+    if (!loading && data) {
+      console.log("fetching data from the subgraph: " + data.GetGameSessions);
+      setGameSession(data.GetGameSessions);
+
+      console.log("Current Game Session: " + data.GetGameSessions);
+    }
+  }, [loading, data]);
+
+  */
 
   // refactor contract calls when all working correctly
   /*
@@ -185,7 +200,12 @@ const contractCallSetup = (method) => {
         setTokenId(charTokenId);
         setLevel(characterLevel);
         console.log(
-          "character info: " + charName + " " + charTokenId + " " + characterLevel
+          "character info: " +
+            charName +
+            " " +
+            charTokenId +
+            " " +
+            characterLevel
         );
       }
     } catch (error) {
@@ -258,12 +278,19 @@ const contractCallSetup = (method) => {
         const account = accounts[0];
 
         // call for random words from Chainlink VRF
-        const randomNumber = await leveler.requestRandomWords({
-          gasLimit: 1000000,
-          gasPrice: 30000000000,
-        });
+
         console.log("Level up process has begun");
         console.log("Request sent to Chainlink VRF");
+
+        const gasLimitWords = await leveler.estimateGas.requestRandomWords();
+        console.log("Estimated Gas Limit for random workds:", gasLimitWords.toString());
+
+
+        const randomNumber = await leveler.requestRandomWords({
+          gasLimit: gasLimitWords,
+          maxFeePerGas: ethers.utils.parseUnits("1.0", "gwei"),
+        });
+        
 
         // Wait for random words to be returned
         await randomNumber.wait();
@@ -271,9 +298,12 @@ const contractCallSetup = (method) => {
           "Random number returned. Initiating level up functionality"
         );
         // send the ramdom number from Chainlink VRF through the modulos calculation and add to character
+        const gasLimitLevel= await leveler.estimateGas.getRandomLevelUp();
+
+        console.log("Estimated Gas Limit for level up:", gasLimitLevel.toString());
         const levelUpTx = await leveler.getRandomLevelUp({
-          gasLimit: 1000000,
-          gasPrice: 30000000000,
+          gasLimit: gasLimitLevel,
+          gasPrice: 3000000000,
         });
 
         console.log("awaiting confirmation was a success");
@@ -286,39 +316,11 @@ const contractCallSetup = (method) => {
         let charName = getLevel[0];
         let newLevel = getLevel[3];
         console.log(`${charName} 's new level is ${newLevel}`);
-
-        console.log("calling leaderboard event listener");
-        await leveler.on(
-          "LevelUpEvent",
-          (owner, characterName, currentLevel) => {
-            let updatedPlayer = {
-              name: characterName,
-              owner: owner,
-              score: currentLevel.toString(),
-            };
-            axios
-              .put(
-                "http://localhost:3000/players/" + updatedPlayer.owner,
-                updatedPlayer
-              )
-              .then((response) => {
-                console.log(response.data);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-            setPlayersUpdated(true);
-            console.log("player successfully added");
-          }
-        );
-        getLeaderboard();
-        console.log("event listener has been called");
       }
     } catch (error) {
       console.log(error);
     }
   };
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -341,8 +343,7 @@ const contractCallSetup = (method) => {
           )}
         </Grid>
         <Grid item xs={6}>
-          <Leaderboard
-          />
+          <Leaderboard />
         </Grid>
       </Grid>
     </ThemeProvider>

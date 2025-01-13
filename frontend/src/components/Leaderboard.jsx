@@ -14,17 +14,14 @@ import { useQuery } from '@apollo/client';
 
 export default function Leaderboard() {
   const [playersList, setPlayersList] = useState([]);
-  const [groupKey, setGroupKey] = useState([]);
 
 
   const { loading, error, data } = useQuery(GET_PLAYERS);
 
   useEffect(() => {
     if(!loading && data) {
-      console.log("fetching data from the subgraph: " + data.playerAddeds)
+      console.log("fetching data from the subgraph")
       setPlayersList(data.playerAddeds)
-
-      console.log("playerlIST: " + playersList)
     }
 
 
@@ -48,6 +45,7 @@ export default function Leaderboard() {
             <TableCell>Character</TableCell>
             <TableCell align="center">Owner</TableCell>
             <TableCell align="right">Score</TableCell>
+            <TableCell align="right">Score</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -61,6 +59,7 @@ export default function Leaderboard() {
               </TableCell>
               <TableCell align="right">{player.owner}</TableCell>
               <TableCell align="right">{player.currentLevel}</TableCell>
+              <TableCell align="right">{player.gameSession}</TableCell>
             </TableRow>
           ))}
         </TableBody>

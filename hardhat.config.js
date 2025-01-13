@@ -3,17 +3,17 @@ require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.10",
+  solidity: "0.8.1",
   networks: {
-    'base-sepolia': {
-      url: 'https://sepolia.base.org',
+    'arbitrumSepolia': {
+      url: 'https://sepolia-rollup.arbitrum.io/rpc',
       accounts: [process.env.PRIVATE_KEY],
       gasPrice: 1000000000,
     },
   },
   
   etherscan: {
-    apiKey: process.env.BASE_TESTNET_API_KEY,
+    apiKey: process.env.ARBITRUM_SEPOLIA_TESTNET_API_KEY,
 
     customChains: [
       {
@@ -23,6 +23,14 @@ module.exports = {
           apiURL: "https://api-sepolia.basescan.org/api",
           browserURL: "https://sepolia.basescan.org/"
         }
+      },
+      {
+        network: "arbitrumSepolia",
+        chainId: 421614,
+        urls: {
+          apiURL: "https://api.arbiscan.io/api",
+          browserURL: "https://sepolia.arbiscan.io/",
+        },
       }
     ]
   },

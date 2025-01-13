@@ -76,14 +76,14 @@ contract CharacterCollector is
 
     mapping(address => Character) public ownerAddressToCharacterInfo;
 
-    // Chainlink VRF Configuration for Base Sepoila
+    // Chainlink VRF Configuration for Arbitrum Sepoila
 
     // LINK fee
     uint256 fee = 0.0001 * 10 ** 18;
     bytes32 keyHash =
-        0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71;
-    address linkAddress = 0xE4aB69C077896252FAFBD49EFD26B5D171A32410;
-    address wrapperAddress = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
+         0x027f94ff1465b3525f9fc03e9ff7d6d2c0953482246dd6ae07570c45d6631414;
+    address linkAddress = 0xb1D4538B4571d411F07960EF2838Ce337FE1E80E;
+    address wrapperAddress = 0x1D3bb92db7659F2062438791F131CFA396dfb592;
     // The limit for how much gas to use for the callback request to your contract’s fulfillRandomWords() function.
     uint32 callbackGasLimit = 300000;
 
@@ -224,7 +224,8 @@ contract CharacterCollector is
     function requestRandomWords() external returns (uint256 requestId) {
         // require(ownerAddressToCharacterInfo[msg.sender].lastLevelUp > 0);
         require(
-            ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession
+            ownerAddressToCharacterInfo[msg.sender].gameSession == gameSession,
+            "Not a participant in this game session"
         );
         require(
             ownerAddressToCharacterInfo[msg.sender].winStatus == false,
