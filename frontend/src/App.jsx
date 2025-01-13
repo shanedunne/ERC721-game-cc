@@ -238,24 +238,6 @@ const contractCallSetup = (method) => {
         // wait for the transaction to be minee
         await newCharacter.wait();
         console.log(newCharacter.hash);
-
-        // catch player info with event
-        await minter.on("PlayerAdded", (owner, characterName, currentLevel) => {
-          axios
-            .post("http://localhost:3000/players", {
-              name: characterName,
-              owner: owner,
-              score: currentLevel.toString(),
-            })
-            .then((response) => {
-              console.log(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-          setPlayersUpdated(true);
-          console.log("player successfully added");
-        });
       }
     } catch (error) {
       console.log(error);
