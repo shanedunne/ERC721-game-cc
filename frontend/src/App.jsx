@@ -85,20 +85,23 @@ export default function App() {
     }
   }, [isConnected, address]);
 
-  /* get current game session
+  // get current game session
 
   const { loading, error, data } = useQuery(GET_GAME_SESSIONS);
 
   useEffect(() => {
     if (!loading && data) {
-      console.log("fetching data from the subgraph: " + data.GetGameSessions);
-      setGameSession(data.GetGameSessions);
-
-      console.log("Current Game Session: " + data.GetGameSessions);
+      let gameSessionData = data.newGameSessionStarteds
+      setGameSession(gameSessionData[0].gameSession);
     }
   }, [loading, data]);
+  if (error) console.log(error.message)
 
-  */
+  useEffect(() => {
+    console.log("gameSession state just changed:", gameSession);
+  }, [gameSession]);
+  
+  
 
   // refactor contract calls when all working correctly
   /*
@@ -277,7 +280,7 @@ console.log("Participant Info:", participantInfo);
 
 
         const randomNumber = await leveler.requestRandomWords({
-          gasLimit: gasLimitWords * 2,
+          gasLimit: gasLimitWords,
           gasPrice: gasPrice,
         });
         
@@ -292,7 +295,7 @@ console.log("Participant Info:", participantInfo);
 
         console.log("Estimated Gas Limit for level up:", gasLimitLevel.toString());
         const levelUpTx = await leveler.getRandomLevelUp({
-          gasLimit: gasLimitLevel * 1.5,
+          gasLimit: gasLimitLevel,
           gasPrice: gasPrice,
         });
 
@@ -333,7 +336,7 @@ console.log("Participant Info:", participantInfo);
           )}
         </Grid>
         <Grid item xs={6}>
-          <Leaderboard />
+          <Leaderboard gameSession={gameSession} />
         </Grid>
       </Grid>
     </ThemeProvider>

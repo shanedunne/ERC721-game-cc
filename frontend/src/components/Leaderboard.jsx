@@ -12,8 +12,8 @@ import { GET_PLAYERS_IN_SESSION } from "../subgraph/queries";
 import { useQuery } from '@apollo/client';
 
 
-export default function Leaderboard() {
-  let currentSession = "1";
+export default function Leaderboard(props) {
+  let currentSession = props.gameSession;
   const [playersList, setPlayersList] = useState([]);
 
 
@@ -22,7 +22,7 @@ export default function Leaderboard() {
       session: currentSession,
       first: 10
     },
-    // pollInterval: 10000
+     pollInterval: 30000
   });
 
   useEffect(() => {
@@ -53,7 +53,6 @@ export default function Leaderboard() {
             <TableCell>Character</TableCell>
             <TableCell align="center">Owner</TableCell>
             <TableCell align="right">Score</TableCell>
-            <TableCell align="right">Score</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -67,7 +66,6 @@ export default function Leaderboard() {
               </TableCell>
               <TableCell align="right">{player.owner}</TableCell>
               <TableCell align="right">{player.currentLevel}</TableCell>
-              <TableCell align="right">{player.gameSession}</TableCell>
             </TableRow>
           ))}
         </TableBody>
