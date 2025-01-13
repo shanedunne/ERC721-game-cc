@@ -28,7 +28,7 @@ module.exports = {
         network: "arbitrumSepolia",
         chainId: 421614,
         urls: {
-          apiURL: "https://api.arbiscan.io/api",
+          apiURL: "https://api-sepolia.arbiscan.io/api",
           browserURL: "https://sepolia.arbiscan.io/",
         },
       }
@@ -40,4 +40,6 @@ module.exports = {
     enabled: true
   }
 };
-console.log("Base Testnet API Key:", process.env.BASE_TESTNET_API_KEY);
+console.log("Arbitrum Sepolia Testnet API Key:", process.env.ARBITRUM_SEPOLIA_TESTNET_API_KEY);
+console.log("All environment variables:", process.env.PRIVATE_KEY);
+

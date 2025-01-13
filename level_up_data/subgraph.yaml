@@ -29,6 +29,7 @@ dataSources:
         - Transfer
         - WeHaveAWinner
         - newGameSessionStarted
+        - Player
       abis:
         - name: CharacterCollector
           file: ./abis/CharacterCollector.json

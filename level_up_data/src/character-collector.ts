@@ -26,7 +26,8 @@ import {
   RequestSent,
   Transfer,
   WeHaveAWinner,
-  newGameSessionStarted
+  newGameSessionStarted,
+  Player
 } from "../generated/schema"
 
 export function handleApproval(event: ApprovalEvent): void {
@@ -79,6 +80,20 @@ export function handleLevelUpEvent(event: LevelUpEventEvent): void {
   let entity = new LevelUpEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
+  let id = event.params.owner.toHexString();
+  let player = Player.load(id);
+
+  if (!player) {
+    // In many games, this shouldn't happen unless you allow level-up without mint
+    player = new Player(id);
+    player.owner = event.params.owner;
+    player.characterName = event.params.characterName;
+    player.currentLevel = event.params.currentLevel;
+    player.gameSession = event.params.gameSession;
+  }
+
+  player.currentLevel = event.params.currentLevel;
+
   entity.owner = event.params.owner
   entity.characterName = event.params.characterName
   entity.currentLevel = event.params.currentLevel
@@ -88,6 +103,7 @@ export function handleLevelUpEvent(event: LevelUpEventEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+  player.save()
   entity.save()
 }
 
@@ -140,6 +156,13 @@ export function handlePlayerAdded(event: PlayerAddedEvent): void {
   let entity = new PlayerAdded(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
+  let id = event.params.owner.toHexString();
+  let player = new Player(id);
+  player.owner = event.params.owner;
+  player.characterName = event.params.characterName;
+  player.currentLevel = event.params.currentLevel; 
+  player.gameSession = event.params.gameSession;
+
   entity.owner = event.params.owner
   entity.characterName = event.params.characterName
   entity.currentLevel = event.params.currentLevel
@@ -149,6 +172,7 @@ export function handlePlayerAdded(event: PlayerAddedEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+  player.save()
   entity.save()
 }
 
@@ -227,3 +251,4 @@ export function handlenewGameSessionStarted(
 
   entity.save()
 }
+

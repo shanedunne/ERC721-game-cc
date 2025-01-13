@@ -259,18 +259,26 @@ const contractCallSetup = (method) => {
         const accounts = await ethereum.request({ method: "eth_accounts" });
         const account = accounts[0];
 
+        const participantInfo = await leveler.ownerAddressToCharacterInfo(account);
+console.log("Participant Info:", participantInfo);
+
+
         // call for random words from Chainlink VRF
 
         console.log("Level up process has begun");
         console.log("Request sent to Chainlink VRF");
 
         const gasLimitWords = await leveler.estimateGas.requestRandomWords();
+        const gasPrice = await provider.getGasPrice();
         console.log("Estimated Gas Limit for random workds:", gasLimitWords.toString());
+
+        // console.log("gas price: " + ethers.utils.parseUnits(gasPrice, "gwei"))
+        console.log(gasPrice)
 
 
         const randomNumber = await leveler.requestRandomWords({
-          gasLimit: gasLimitWords,
-          maxFeePerGas: ethers.utils.parseUnits("1.0", "gwei"),
+          gasLimit: gasLimitWords * 2,
+          gasPrice: gasPrice,
         });
         
 
@@ -284,8 +292,8 @@ const contractCallSetup = (method) => {
 
         console.log("Estimated Gas Limit for level up:", gasLimitLevel.toString());
         const levelUpTx = await leveler.getRandomLevelUp({
-          gasLimit: gasLimitLevel,
-          gasPrice: 3000000000,
+          gasLimit: gasLimitLevel * 1.5,
+          gasPrice: gasPrice,
         });
 
         console.log("awaiting confirmation was a success");

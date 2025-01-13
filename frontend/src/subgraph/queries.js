@@ -44,3 +44,20 @@ export const GET_LEVEL_UP_EVENTS = gql`
     }
   }
 `;
+
+export const GET_PLAYERS_IN_SESSION = gql`
+  query GetPlayersInSession($session: BigInt!, $first: Int!) {
+    players(
+      where: { gameSession: $session }
+      first: $first
+      orderBy: currentLevel
+      orderDirection: desc
+    ) {
+      id
+      owner
+      characterName
+      currentLevel
+      gameSession
+    }
+  }
+`;

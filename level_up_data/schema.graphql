@@ -123,3 +123,11 @@ type newGameSessionStarted @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+type Player @entity {
+  id: ID!
+  owner: Bytes!
+  characterName: String!
+  currentLevel: BigInt!
+  gameSession: BigInt
+}

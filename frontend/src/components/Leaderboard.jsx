@@ -8,20 +8,28 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import "./Component.css";
 import axios from "axios";
-import { GET_PLAYERS } from "../subgraph/queries";
+import { GET_PLAYERS_IN_SESSION } from "../subgraph/queries";
 import { useQuery } from '@apollo/client';
 
 
 export default function Leaderboard() {
+  let currentSession = "1";
   const [playersList, setPlayersList] = useState([]);
 
 
-  const { loading, error, data } = useQuery(GET_PLAYERS);
+  const { loading, error, data } = useQuery(GET_PLAYERS_IN_SESSION, {
+    variables: {
+      session: currentSession,
+      first: 10
+    },
+    // pollInterval: 10000
+  });
 
   useEffect(() => {
-    if(!loading && data) {
+    if(!loading && data && data.players) {
       console.log("fetching data from the subgraph")
-      setPlayersList(data.playerAddeds)
+      setPlayersList(data.players)
+      console.log(playersList)
     }
 
 
@@ -29,7 +37,7 @@ export default function Leaderboard() {
   }, [loading, data]);
 
   if(loading) console.log("fetching players from graph");
-  if (error) console.log("error fetching players");
+  if (error) console.log("error fetching players: ", error.message, error.graphQLErrors);
 
 
 
