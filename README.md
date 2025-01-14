@@ -36,4 +36,5 @@ Contract address: 0x1f3CF6f99bb7f53bC860e546B3098c3B4A76BfE0
 ## Work Ons
 - Amend contract interactions so all wallets will work.
 - Make site responsive.
+- Contract interaction improvments. There seems to be some unpredictable failures in contract interactions. It is replicatable on Arbiscan so doesn't seem to be the app frontend. 
 
