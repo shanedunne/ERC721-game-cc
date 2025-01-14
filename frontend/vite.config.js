@@ -6,6 +6,9 @@ export default defineConfig({
     'process.env': process.env
   },
   plugins: [react()],
+  build: {
+    outDir: 'dist',
+  },
   resolve: {
     alias: {
       "@": "/src", // Optional, for cleaner imports
