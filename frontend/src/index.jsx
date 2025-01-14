@@ -13,7 +13,7 @@ import {
 
 window.Buffer = Buffer;
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: 'https://api.studio.thegraph.com/query/100759/level_up_data/version/latest',
   cache: new InMemoryCache(),
 });

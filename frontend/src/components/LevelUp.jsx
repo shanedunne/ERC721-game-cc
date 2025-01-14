@@ -27,7 +27,7 @@ export default function LevelUpCard({ levelUp }) {
             Level Up
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            Level up your character once every 24 hours. First one to 75 wins.
+            Level up your character. First one to 75 wins.
             Level up scores will be random to all users.
           </Typography>
         </CardContent>

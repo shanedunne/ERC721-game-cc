@@ -9,13 +9,13 @@ import MintCard from "./components/Mint";
 import LevelUpCard from "./components/LevelUp";
 import Leaderboard from "./components/Leaderboard";
 import Grid from "@mui/material/Grid";
-import axios from "axios";
 import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
 import { arbitrumSepolia, baseSepolia } from "@reown/appkit/networks";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { GET_GAME_SESSIONS } from "./subgraph/queries";
 import { useQuery } from "@apollo/client";
+import checkPlayer from "./subgraph/getPlayers";
 
 // 1. Get projectId
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
@@ -49,6 +49,10 @@ createAppKit({
     analytics: true, // Optional - defaults to your Cloud configuration
   },
   themeMode: "light",
+  themeVariables: {
+    "--w3m-color-mix": "#ffc8dd",
+    "--w3m-color-mix-strength": 18,
+  },
 });
 
 export default function App() {
@@ -91,24 +95,22 @@ export default function App() {
 
   useEffect(() => {
     if (!loading && data) {
-      let gameSessionData = data.newGameSessionStarteds
+      let gameSessionData = data.newGameSessionStarteds;
       setGameSession(gameSessionData[0].gameSession);
     }
   }, [loading, data]);
-  if (error) console.log(error.message)
+  if (error) console.log(error.message);
 
   useEffect(() => {
     console.log("gameSession state just changed:", gameSession);
   }, [gameSession]);
-  
-  
 
   // refactor contract calls when all working correctly
   /*
-const contractCallSetup = (method) => {
+const contractCallSetup = () => {
   if(address) {
     const contract = new ethers.Contract(
-      contractAddress,
+      address,
       contractABI,
       signer
     );
@@ -166,9 +168,18 @@ const contractCallSetup = (method) => {
         const balance = await verifyMintStatus.balanceOf(account);
 
         if (balance > 0) {
-          setHasMinted(true);
-          console.log("token ID" + balance);
-          getCharacterInfo();
+          const isParticipant = await checkPlayer("1", address)
+          if (isParticipant) {
+            setHasMinted(true);
+            console.log("token ID" + balance);
+            console.log("success on finding player in session " + gameSession)
+            getCharacterInfo();
+          } else {
+            console.log(
+              "Participant of a previous session. Please mint a new character to play"
+            );
+          }
+
         } else {
           console.log("has not minted - display mint page");
         }
@@ -262,9 +273,10 @@ const contractCallSetup = (method) => {
         const accounts = await ethereum.request({ method: "eth_accounts" });
         const account = accounts[0];
 
-        const participantInfo = await leveler.ownerAddressToCharacterInfo(account);
-console.log("Participant Info:", participantInfo);
-
+        const participantInfo = await leveler.ownerAddressToCharacterInfo(
+          account
+        );
+        console.log("Participant Info:", participantInfo);
 
         // call for random words from Chainlink VRF
 
@@ -273,17 +285,18 @@ console.log("Participant Info:", participantInfo);
 
         const gasLimitWords = await leveler.estimateGas.requestRandomWords();
         const gasPrice = await provider.getGasPrice();
-        console.log("Estimated Gas Limit for random workds:", gasLimitWords.toString());
+        console.log(
+          "Estimated Gas Limit for random workds:",
+          gasLimitWords.toString()
+        );
 
         // console.log("gas price: " + ethers.utils.parseUnits(gasPrice, "gwei"))
-        console.log(gasPrice)
-
+        console.log(gasPrice);
 
         const randomNumber = await leveler.requestRandomWords({
-          gasLimit: gasLimitWords,
+          gasLimit: gasLimitWords * 2,
           gasPrice: gasPrice,
         });
-        
 
         // Wait for random words to be returned
         await randomNumber.wait();
@@ -291,11 +304,14 @@ console.log("Participant Info:", participantInfo);
           "Random number returned. Initiating level up functionality"
         );
         // send the ramdom number from Chainlink VRF through the modulos calculation and add to character
-        const gasLimitLevel= await leveler.estimateGas.getRandomLevelUp();
+        const gasLimitLevel = await leveler.estimateGas.getRandomLevelUp();
 
-        console.log("Estimated Gas Limit for level up:", gasLimitLevel.toString());
+        console.log(
+          "Estimated Gas Limit for level up:",
+          gasLimitLevel.toString()
+        );
         const levelUpTx = await leveler.getRandomLevelUp({
-          gasLimit: gasLimitLevel,
+          gasLimit: gasLimitLevel * 2,
           gasPrice: gasPrice,
         });
 

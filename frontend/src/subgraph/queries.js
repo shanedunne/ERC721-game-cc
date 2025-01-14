@@ -46,7 +46,7 @@ export const GET_LEVEL_UP_EVENTS = gql`
 `;
 
 export const GET_PLAYERS_IN_SESSION = gql`
-  query GetPlayersInSession($session: BigInt!, $first: Int!) {
+  query GetPlayersInSession($session: String!, $first: Int!) {
     players(
       where: { gameSession: $session }
       first: $first

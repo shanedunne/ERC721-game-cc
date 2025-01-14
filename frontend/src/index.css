@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.mint-button {
+  background-color: #CDB4DB;
+  color: #fff;
+  border-color: #ffc8dd;
+}
+
+.mint-button:hover {
+  background-color: #a2d2ff;
+  color: #fff;
+  border-color: #BDE0FE;
+  transition: 0.8s;
+}
+
