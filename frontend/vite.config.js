@@ -7,7 +7,8 @@ export default defineConfig({
   },
   plugins: [react()],
   build: {
-    outDir: 'frontend/dist',
+    outDir: 'dist',
+    emptyOutDir: true,
   },
   resolve: {
     alias: {
